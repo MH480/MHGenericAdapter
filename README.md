@@ -92,8 +92,11 @@ and you must pass ViewHolderModel.class as constructor parameter
 finaly you can create new instace of #MHGenericAdapter  like below
 
 ```
-  MHRecyclerAdapter<ItemModel,ViewHolderModel> mAdapterRequests;
-  mAdapterRequests = new MHRecyclerAdapter<ItemModel,ViewHolderModel>(ViewHolderModel.class);
+  MHRecyclerAdapter<ItemModel,ViewHolderModel> mAdapter;
+  mAdapter = new MHRecyclerAdapter<ItemModel,ViewHolderModel>(ViewHolderModel.class);
+  RecyclerView mRecycler = findViewById(R.id.mRecycler);
+  mRecycler.setAdapter(mAdapter);
+  mRecycler.addOnItemTouchListener(mAdapterRequests.buildTouchItemListener(this, mRecycler, this));
 ```
 
 ## Deployment
