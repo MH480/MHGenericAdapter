@@ -79,7 +79,7 @@ third step is the item.xml file
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     
-</FrameLayout>
+</LinearLayout>
     
 ```
 the ```ItemModel```class is my items class for adapter items
