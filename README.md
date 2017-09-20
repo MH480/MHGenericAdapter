@@ -96,7 +96,7 @@ finaly you can create new instace of #MHGenericAdapter  like below
   mAdapter = new MHRecyclerAdapter<ItemModel,ViewHolderModel>(ViewHolderModel.class);
   RecyclerView mRecycler = findViewById(R.id.mRecycler);
   mRecycler.setAdapter(mAdapter);
-  mRecycler.addOnItemTouchListener(mAdapterRequests.buildTouchItemListener(this, mRecycler, this));
+  mRecycler.addOnItemTouchListener(mAdapter.buildTouchItemListener(this, mRecycler, this));
 ```
 
 ## Deployment
