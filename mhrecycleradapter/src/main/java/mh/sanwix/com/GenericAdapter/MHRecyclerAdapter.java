@@ -6,7 +6,6 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import android.view.ViewGroup;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -108,11 +106,13 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         _selectedItems = new SparseBooleanArray();
         listeners = new ArrayList<>();
         hasEmptyView = false;
+        propertiesNames = new ArrayList<>();
 
     }
 
     /**
      * find Layout id in given Model
+     *
      * @param model
      * @return
      */
@@ -124,6 +124,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
 
     /**
      * Exit point of onbindView in Adapter
+     *
      * @param bindView Interface MH IonBindView
      */
     public void setBindViewCallBack(MHIonBindView bindView)
@@ -134,6 +135,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
 
     /**
      * add View With Given ID as Clickable View on top of stack
+     *
      * @param propertyID ID of clickable view
      */
     public void addListener(@IdRes int propertyID)
@@ -194,10 +196,13 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     @Override
     public void setItems(List<Model> _items)
     {
-        items = new ArrayList<>();
-        items.addAll(_items);
-        propertiesNames = getPropertiesNames(items.get(0));
-        notifyDataSetChanged();
+        if (_items != null && _items.size() > 0)
+        {
+            items = new ArrayList<>();
+            items.addAll(_items);
+            propertiesNames = getPropertiesNames(items.get(0));
+            notifyDataSetChanged();
+        }
     }
 
     private List<String> getPropertiesNames(Model m)
@@ -388,12 +393,6 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
             default:
                 v = LayoutInflater.from(parent.getContext()).inflate(resId, parent, false);
                 mhvh = new MHViewHolder<VHModel>(v, MyVHolder);
-                /*if (listeners != null && !listeners.isEmpty())
-                    for (int i = 0; i < listeners.size(); i++)
-                    {
-                        MyKeyValue kv = listeners.get(i);
-                        mhvh.setListener(kv.Key, kv.Listener);
-                    }*/
 
                 break;
         }
