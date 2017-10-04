@@ -201,7 +201,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
             items = new ArrayList<>();
             items.addAll(_items);
             propertiesNames = getPropertiesNames(items.get(0));
-            notifyDataSetChanged();
+            notifyItemRangeInserted(0, items.size());
         }
     }
 

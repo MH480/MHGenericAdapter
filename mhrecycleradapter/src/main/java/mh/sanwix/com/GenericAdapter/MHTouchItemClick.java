@@ -1,8 +1,6 @@
 package mh.sanwix.com.GenericAdapter;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompatSideChannelService;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -13,8 +11,6 @@ import android.view.ViewGroup;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,31 +24,10 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
 {
     GestureDetector mGestureDetector;
     RecyclerView rv;
-    private MHOnItemClickListener mListener;
     Class<ViewHolderModel> viewHolderModel;
     List<Integer> ClickableIds;
     boolean isidOK ;
-    public void setViewHolderModel(Class<ViewHolderModel> model)
-    {
-        this.viewHolderModel = model;
-        isidOK = false;
-    }
-
-    public void setIds(List<Integer> ids)
-    {
-        if (this.ClickableIds == null || this.ClickableIds.isEmpty())
-            this.ClickableIds = new ArrayList<>();
-        ClickableIds.addAll(ids);
-        //distinct
-        Set<Integer> hs = new HashSet<>();
-        hs.addAll(ClickableIds);
-        ClickableIds.clear();
-        ClickableIds.addAll(hs);
-        //distinct
-
-        isidOK = true;
-    }
-
+    private MHOnItemClickListener mListener;
     public MHTouchItemClick(Context context, RecyclerView _rv, MHOnItemClickListener listener, Class<ViewHolderModel> myVHolder)
     {
         ClickableIds = new ArrayList<>();
@@ -73,6 +48,8 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
             {
                 super.onLongPress(e);
                 View raw = rv.findChildViewUnder(e.getX(), e.getY());
+                if (raw == null)
+                    return;
                 View clickedview = null;
                 if (isidOK)
                 {
@@ -106,6 +83,27 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
                     mListener.onItemLongClick(rv.getId(), raw, rv.getChildLayoutPosition(raw), clickedview);
             }
         });
+    }
+
+    public void setViewHolderModel(Class<ViewHolderModel> model)
+    {
+        this.viewHolderModel = model;
+        isidOK = false;
+    }
+
+    public void setIds(List<Integer> ids)
+    {
+        if (this.ClickableIds == null || this.ClickableIds.isEmpty())
+            this.ClickableIds = new ArrayList<>();
+        ClickableIds.addAll(ids);
+        //distinct
+        Set<Integer> hs = new HashSet<>();
+        hs.addAll(ClickableIds);
+        ClickableIds.clear();
+        ClickableIds.addAll(hs);
+        //distinct
+
+        isidOK = true;
     }
 
     private void findIDS(Class<ViewHolderModel> model)
@@ -145,6 +143,8 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
     public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e)
     {
         View raw = rv.findChildViewUnder(e.getX(), e.getY());
+        if (raw == null)
+            return false;
         View clickedview = null;
         if (isidOK)
         {
