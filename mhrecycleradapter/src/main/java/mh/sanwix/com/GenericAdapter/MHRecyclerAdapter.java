@@ -344,6 +344,8 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     @Override
     public void appendItems(List<Model> appends)
     {
+        if (propertiesNames == null || propertiesNames.size() == 0)
+            throw new RuntimeException("you must use 'setItems' method for first time to initialize data");
         int size = items.size();
         items.addAll(appends);
         notifyItemRangeInserted(size, appends.size());
@@ -405,9 +407,8 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         if (holder == null)
             return;
         if (getItemViewType(position) == EMPTY_VIEW_TYPE)
-        {
             return;
-        }
+
         Model m = items.get(position);
         List<View> childs = new ArrayList<>();
         Class<Model> clazz = (Class<Model>) m.getClass();
