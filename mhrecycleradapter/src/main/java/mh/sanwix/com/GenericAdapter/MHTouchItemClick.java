@@ -26,8 +26,9 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
     RecyclerView rv;
     Class<ViewHolderModel> viewHolderModel;
     List<Integer> ClickableIds;
-    boolean isidOK ;
+    boolean isidOK;
     private MHOnItemClickListener mListener;
+
     public MHTouchItemClick(Context context, RecyclerView _rv, MHOnItemClickListener listener, Class<ViewHolderModel> myVHolder)
     {
         ClickableIds = new ArrayList<>();
@@ -79,7 +80,7 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
                         clickedview = isPointInsideView(e.getRawX(), e.getRawY(), raw);
                 }
 
-                if (raw != null && mListener != null)
+                if (mListener != null)
                     mListener.onItemLongClick(rv.getId(), raw, rv.getChildLayoutPosition(raw), clickedview);
             }
         });
@@ -174,13 +175,15 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
                 clickedview = isPointInsideView(e.getRawX(), e.getRawY(), raw);
         }
 
-        if (raw != null && mListener != null && mGestureDetector.onTouchEvent(e))
+        if (mListener != null && mGestureDetector.onTouchEvent(e))
             mListener.onItemClick(rv.getId(), raw, rv.getChildLayoutPosition(raw), clickedview);
         return false;
     }
 
     private View isPointInsideView(float x, float y, View child)
     {
+        if (child == null)
+            return null;
 
         int location[] = new int[2];
         child.getLocationOnScreen(location);
