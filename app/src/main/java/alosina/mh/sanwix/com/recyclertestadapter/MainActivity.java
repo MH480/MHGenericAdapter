@@ -1,8 +1,8 @@
 package alosina.mh.sanwix.com.recyclertestadapter;
 
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -13,7 +13,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import mh.sanwix.com.GenericAdapter.*;
+import mh.sanwix.com.GenericAdapter.MHIonBindView;
+import mh.sanwix.com.GenericAdapter.MHOnItemClickListener;
+import mh.sanwix.com.GenericAdapter.MHRecyclerAdapter;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, MHIonBindView, View.OnFocusChangeListener, MHOnItemClickListener
@@ -29,29 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.layout_activity_main);
         models.add(new myModel("asb"));
         models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
+
 
         mAdapter = new MHRecyclerAdapter<myModel, MyVHModel>(MyVHModel.class);
         mRecycler = findViewById(R.id.mrecycler);
