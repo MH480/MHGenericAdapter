@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -18,7 +19,7 @@ import mh.sanwix.com.GenericAdapter.MHOnItemClickListener;
 import mh.sanwix.com.GenericAdapter.MHRecyclerAdapter;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, MHIonBindView, View.OnFocusChangeListener, MHOnItemClickListener
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnFocusChangeListener, MHOnItemClickListener, MHIonBindView
 {
     List<myModel> models = new ArrayList<>();
     RecyclerView mRecycler;
@@ -38,8 +39,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRecycler.setAdapter(mAdapter);
         mAdapter.setItems(models);
-        mAdapter.setBindViewCallBack(this);
         mAdapter.setEmptyView(MyEmptyVH.class);
+        mAdapter.setBindViewCallBack(this);
         mRecycler.addOnItemTouchListener(mAdapter.buildTouchItemListener(this,mRecycler,this));
     }
 
@@ -50,11 +51,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Toast.makeText(this, "hi", Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void BindViewHolder(ViewGroup rootView, final int pos, View... chillViews)
-    {
-
-    }
 
     @Override
     public void onFocusChange(View view, boolean b)
@@ -77,6 +73,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onItemLongClick(int recycler_id, View itemView, int position, @Nullable View clickedView)
     {
 
+    }
+
+
+    @Override
+    public void BindViewHolder(ViewGroup rootView, Object HolderClass, int posision, View... childViews)
+    {
+        Log.i("asd", "BindViewHolder: ");
     }
 }
 

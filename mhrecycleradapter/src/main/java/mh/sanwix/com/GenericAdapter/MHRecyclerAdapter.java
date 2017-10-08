@@ -336,6 +336,18 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     }
 
     @Override
+    public void setAllItemsSelected()
+    {
+        if (isMultiSelection || isSelectable)
+        {
+            _selectedItems.clear();
+            for (int i = 0; i < items.size(); i++)
+                _selectedItems.put(i, true);
+        }
+        notifyDataSetChanged();
+    }
+
+    @Override
     public Model getSelectedItem(int index)
     {
         return getItem(_selectedItems.keyAt(index));
@@ -388,7 +400,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
                 if (hasEmptyView)
                 {
                     v = LayoutInflater.from(parent.getContext()).inflate(resId_empty, parent, false);
-                    mhvh = new MHViewHolder(v, MyEmptyVH);
+                    mhvh = new MHViewHolder<>(v, MyEmptyVH);
                 }
                 break;
             case MAIN_VIEW_TYPE:
@@ -437,15 +449,19 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
 
         if (bindView != null && holder.itemView instanceof ViewGroup)
         {
+            View[] array = new View[0];
             try
             {
-                View[] array = new View[childs.size()];
+                array = new View[childs.size()];
                 childs.toArray(array);
-                bindView.BindViewHolder((ViewGroup) holder.itemView, position, array);
             }
             catch (Exception ex)
             {
                 ex.printStackTrace();
+            }
+            finally
+            {
+                bindView.BindViewHolder((ViewGroup) holder.itemView, holder.getMyModel(), position, array);
             }
         }
 

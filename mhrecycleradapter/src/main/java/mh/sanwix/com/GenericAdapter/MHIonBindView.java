@@ -9,5 +9,13 @@ import android.view.ViewGroup;
 
 public interface MHIonBindView
 {
-    void BindViewHolder(ViewGroup rootView, int pos,View... chillViews);
+    /**
+     * it animates the onbindview adapter
+     *
+     * @param rootView    the root view of the layout as view gruop
+     * @param HolderClass the holder class of adapter
+     * @param posision    the row position in adapter
+     * @param childViews  all Children vieis in adapter witch has MHBindView Anottation
+     */
+    void BindViewHolder(ViewGroup rootView, Object HolderClass, int posision, View... childViews);
 }

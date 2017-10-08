@@ -130,6 +130,12 @@ interface MHIBaseAdapter<T>
     List<Integer> getSelectedItemsIndices();
 
     /**
+     * set all items in recycler as selected
+     */
+    void setAllItemsSelected();
+
+
+    /**
      * adds range if model to end of items
      * @param appends list of model
      */
@@ -155,4 +161,5 @@ interface MHIBaseAdapter<T>
      * @return RecyclerView.OnItemTouchListener
      */
     RecyclerView.OnItemTouchListener buildTouchItemListener(Context context, RecyclerView _rv, MHOnItemClickListener listener);
+
 }

@@ -38,6 +38,113 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
 
     }
 
+    private void setViewModel(Class<T> model, View itemView)
+    {
+        MyModel = null;
+        try
+        {
+            MyModel = model.newInstance();
+        }
+        catch (InstantiationException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IllegalAccessException e)
+        {
+            e.printStackTrace();
+        }
+        if (MyModel == null)
+        {
+            Log.i("MH_Model ", " setViewModel: Null");
+            return;
+        }
+
+        Class<?> clazz = MyModel.getClass();
+        for (Field f : clazz.getDeclaredFields())
+        {
+
+            int modifier = f.getModifiers();
+            MHBindView col = f.getAnnotation(MHBindView.class);
+            if (Modifier.isPublic(modifier) && !Modifier.isStatic(modifier) && !Modifier.isFinal(modifier) && col != null)
+                try
+                {
+                    f.setAccessible(true);
+                    if (f.getType() == TextView.class)
+                    {
+                        TextView tv = itemView.findViewById(col.value());
+                        ItemsHolder.add(new MyKeyValue(col.value(), tv, TextView.class));
+                        f.set(MyModel, tv);
+                    }
+                    else if (f.getType() == Button.class)
+                    {
+                        Button btn = itemView.findViewById(col.value());
+                        ItemsHolder.add(new MyKeyValue(col.value(), btn, Button.class));
+                        f.set(MyModel, btn);
+
+                    }
+                    else if (f.getType() == EditText.class)
+                    {
+                        EditText txt = itemView.findViewById(col.value());
+                        ItemsHolder.add(new MyKeyValue(col.value(), txt, EditText.class));
+                        f.set(MyModel, txt);
+                    }
+                    else if (f.getType() == CheckBox.class)
+                    {
+                        CheckBox chk = itemView.findViewById(col.value());
+                        ItemsHolder.add(new MyKeyValue(col.value(), chk, CheckBox.class));
+                        f.set(MyModel, chk);
+                    }
+                    else if (f.getType() == RadioButton.class)
+                    {
+                        RadioButton rdbtn = itemView.findViewById(col.value());
+                        ItemsHolder.add(new MyKeyValue(col.value(), rdbtn, RadioButton.class));
+                        f.set(MyModel, rdbtn);
+                    }
+                    else if (f.getType() == Switch.class)
+                    {
+                        Switch swc = itemView.findViewById(col.value());
+                        ItemsHolder.add(new MyKeyValue(col.value(), swc, Switch.class));
+                        f.set(MyModel, swc);
+                    }
+                    else if (f.getType() == ImageButton.class)
+                    {
+                        ImageButton imgbtn = itemView.findViewById(col.value());
+                        ItemsHolder.add(new MyKeyValue(col.value(), imgbtn, ImageButton.class));
+                        f.set(MyModel, imgbtn);
+                    }
+                    else if (f.getType() == ImageView.class)
+                    {
+                        ImageView img = itemView.findViewById(col.value());
+                        ItemsHolder.add(new MyKeyValue(col.value(), img, ImageView.class));
+                        f.set(MyModel, img);
+                    }
+                    else if (f.getType() == RatingBar.class)
+                    {
+                        RatingBar ratBar = itemView.findViewById(col.value());
+                        ItemsHolder.add(new MyKeyValue(col.value(), ratBar, RatingBar.class));
+                        f.set(MyModel, ratBar);
+                    }
+                    else
+                    {
+                        View v = itemView.findViewById(col.value());
+                        if (v != null)
+                        {
+                            ItemsHolder.add(new MyKeyValue(col.value(), v, v.getClass()));
+                            f.set(MyModel, v);
+                        }
+                    }
+
+
+                }
+                catch (IllegalAccessException e)
+                {
+                    e.printStackTrace();
+                }
+        }
+
+
+    }
+
     public View setValue(int propertyID, Object value)
     {
         for (MyKeyValue kv : ItemsHolder)
@@ -45,17 +152,17 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
             {
                 if (kv.clazz == TextView.class)
                 {
-                    ((TextView) kv.Value).setText(value + "");
+                    ((TextView) kv.Value).setText(String.valueOf(value));
                     return kv.Value;
                 }
                 else if (kv.clazz == EditText.class)
                 {
-                    ((EditText) kv.Value).setText(value + "");
+                    ((EditText) kv.Value).setText(String.valueOf(value));
                     return kv.Value;
                 }
                 else if (kv.clazz == Button.class)
                 {
-                    ((Button) kv.Value).setText(value + "");
+                    ((Button) kv.Value).setText(String.valueOf(value));
                     return kv.Value;
                 }
                 else if (kv.clazz == CheckBox.class)
@@ -96,8 +203,14 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                 }
                 else if (kv.clazz == RatingBar.class)
                 {
-                    ((RatingBar) kv.Value).setRating((Float.parseFloat(value+"")));
+                    ((RatingBar) kv.Value).setRating((Float.parseFloat(value + "")));
+                    return kv.Value;
                 }
+                else
+                {
+                    return kv.Value;
+                }
+
 
             }
         return null;
@@ -115,84 +228,10 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
 
     }
 
-
     public int getViewID(Class<T> model)
     {
         MHBindView col = model.getAnnotation(MHBindView.class);
         return (col != null) ? col.value() : 0;
-    }
-
-    private void setViewModel(Class<T> model, View itemView)
-    {
-        T MyModel = null;
-        //try
-        try
-        {
-            MyModel = model.newInstance();
-        }
-        catch (InstantiationException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IllegalAccessException e)
-        {
-            e.printStackTrace();
-        }
-        if (MyModel == null)
-        {
-            Log.i("MH_Model ", " setViewModel: Null");
-            return;
-        }
-
-        for (Field f : model.getDeclaredFields())
-        {
-            Class<?> clazz = MyModel.getClass();
-            int modifier = f.getModifiers();
-            MHBindView col = f.getAnnotation(MHBindView.class);
-            if (Modifier.isPublic(modifier) && !Modifier.isStatic(modifier) && !Modifier.isFinal(modifier) && col != null)
-            {
-                if (f.getType() == TextView.class)
-                {
-                    ItemsHolder.add(new MyKeyValue(col.value(), (TextView) itemView.findViewById(col.value()), TextView.class));
-                }
-                else if (f.getType() == Button.class)
-                {
-                    ItemsHolder.add(new MyKeyValue(col.value(), (Button) itemView.findViewById(col.value()), Button.class));
-                }
-                else if (f.getType() == EditText.class)
-                {
-                    ItemsHolder.add(new MyKeyValue(col.value(), (EditText) itemView.findViewById(col.value()), EditText.class));
-                }
-                else if (f.getType() == CheckBox.class)
-                {
-                    ItemsHolder.add(new MyKeyValue(col.value(), (CheckBox) itemView.findViewById(col.value()), CheckBox.class));
-                }
-                else if (f.getType() == RadioButton.class)
-                {
-                    ItemsHolder.add(new MyKeyValue(col.value(), (RadioButton) itemView.findViewById(col.value()), RadioButton.class));
-                }
-                else if (f.getType() == Switch.class)
-                {
-                    ItemsHolder.add(new MyKeyValue(col.value(), (Switch) itemView.findViewById(col.value()), Switch.class));
-                }
-                else if (f.getType() == ImageButton.class)
-                {
-                    ItemsHolder.add(new MyKeyValue(col.value(), (ImageButton) itemView.findViewById(col.value()), ImageButton.class));
-                }
-                else if (f.getType() == ImageView.class)
-                {
-                    ItemsHolder.add(new MyKeyValue(col.value(), (ImageView) itemView.findViewById(col.value()), ImageView.class));
-                }
-                else if (f.getType() == RatingBar.class)
-                {
-                    ItemsHolder.add(new MyKeyValue(col.value(), (RatingBar) itemView.findViewById(col.value()), RatingBar.class));
-                }
-
-
-            }
-        }
-
-
     }
 
     private Field getFieldByName(T model, String name)
@@ -211,12 +250,16 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
         return null;
     }
 
-
     public Object[] getItemsHolder()
     {
         Object[] vs = new Object[ItemsHolder.size()];
         for (int i = 0; i < ItemsHolder.size(); i++)
             vs[i] = ItemsHolder.get(i).Value;
         return vs;
+    }
+
+    public Object getMyModel()
+    {
+        return MyModel;
     }
 }

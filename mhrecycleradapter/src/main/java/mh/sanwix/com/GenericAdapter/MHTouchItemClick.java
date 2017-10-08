@@ -76,8 +76,7 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
                                 break;
                         }
                     }
-                    else
-                        clickedview = isPointInsideView(e.getRawX(), e.getRawY(), raw);
+
                 }
 
                 if (mListener != null)
@@ -171,8 +170,7 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
                         break;
                 }
             }
-            else
-                clickedview = isPointInsideView(e.getRawX(), e.getRawY(), raw);
+
         }
 
         if (mListener != null && mGestureDetector.onTouchEvent(e))
