@@ -21,7 +21,7 @@ compile "com.github.MH480:MHGenericAdapter:0.1.4"
     
     * you can have onClick and onLongClick functionalities
     
-    * you will be albe to have selectable items
+    * you will be able to have selectable items
     
     * Empty view is added,so you can have recycler view with empty view
     
