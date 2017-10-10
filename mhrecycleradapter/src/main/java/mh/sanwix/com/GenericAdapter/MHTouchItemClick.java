@@ -1,6 +1,5 @@
 package mh.sanwix.com.GenericAdapter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -29,14 +28,14 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
     boolean isidOK;
     private MHOnItemClickListener mListener;
 
-    public MHTouchItemClick(Context context, RecyclerView _rv, MHOnItemClickListener listener, Class<ViewHolderModel> myVHolder)
+    public MHTouchItemClick(RecyclerView _rv, MHOnItemClickListener listener, Class<ViewHolderModel> myVHolder)
     {
         ClickableIds = new ArrayList<>();
         mListener = listener;
         rv = _rv;
         setViewHolderModel(myVHolder);
         findIDS(myVHolder);
-        mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener()
+        mGestureDetector = new GestureDetector(_rv.getContext(), new GestureDetector.SimpleOnGestureListener()
         {
             @Override
             public boolean onSingleTapUp(MotionEvent e)

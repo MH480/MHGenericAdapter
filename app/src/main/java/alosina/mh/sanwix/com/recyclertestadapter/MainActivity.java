@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mAdapter.setItems(models);
         mAdapter.setEmptyView(MyEmptyVH.class);
         mAdapter.setBindViewCallBack(this);
-        mRecycler.addOnItemTouchListener(mAdapter.buildTouchItemListener(this,mRecycler,this));
+        mRecycler.addOnItemTouchListener(mAdapter.buildTouchItemListener(mRecycler, this));
     }
 
 

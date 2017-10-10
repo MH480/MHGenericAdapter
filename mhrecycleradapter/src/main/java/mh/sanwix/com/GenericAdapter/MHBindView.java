@@ -1,9 +1,6 @@
 package mh.sanwix.com.GenericAdapter;
 
 
-import android.content.Context;
-import android.view.View;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -28,4 +25,8 @@ public @interface MHBindView
      * @return isClickable ? true : false;
      */
     boolean isClickable() default false;
+
+    boolean isTextAppend() default false;
+
+    boolean isHtml() default false;
 }

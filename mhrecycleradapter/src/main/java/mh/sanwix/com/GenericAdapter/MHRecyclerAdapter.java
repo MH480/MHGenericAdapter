@@ -1,6 +1,5 @@
 package mh.sanwix.com.GenericAdapter;
 
-import android.content.Context;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -199,6 +198,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         if (_items != null && _items.size() > 0)
         {
             items = new ArrayList<>();
+            notifyDataSetChanged();
             items.addAll(_items);
             propertiesNames = getPropertiesNames(items.get(0));
             notifyItemRangeInserted(0, _items.size());
@@ -376,14 +376,14 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     }
 
     @Override
-    public RecyclerView.OnItemTouchListener buildTouchItemListener(Context context, RecyclerView _rv, MHOnItemClickListener listener)
+    public RecyclerView.OnItemTouchListener buildTouchItemListener(RecyclerView _rv, MHOnItemClickListener listener)
     {
         List<Integer> ids = new ArrayList<>();
         for (MyKeyValue kv : listeners)
         {
             ids.add(kv.Key);
         }
-        MHTouchItemClick<VHModel> click = new MHTouchItemClick<VHModel>(context, _rv, listener, MyVHolder);
+        MHTouchItemClick<VHModel> click = new MHTouchItemClick<VHModel>(_rv, listener, MyVHolder);
         click.setIds(ids);
         return click;
     }
@@ -433,7 +433,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
                 {
                     f.setAccessible(true);
                     Object value = f.get(m);
-                    View j = holder.setValue(col.value(), value);
+                    View j = holder.setValue(col.value(), value, col.isTextAppend(), col.isHtml());
                     childs.add(j);
                 }
             }

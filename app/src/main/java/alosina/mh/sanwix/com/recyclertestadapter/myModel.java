@@ -1,7 +1,5 @@
 package alosina.mh.sanwix.com.recyclertestadapter;
 
-import java.lang.annotation.Annotation;
-
 import mh.sanwix.com.GenericAdapter.MHBindView;
 
 public class myModel

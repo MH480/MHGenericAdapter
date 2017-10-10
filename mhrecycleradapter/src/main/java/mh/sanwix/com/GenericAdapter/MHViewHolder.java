@@ -3,6 +3,7 @@ package mh.sanwix.com.GenericAdapter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -145,24 +146,37 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
 
     }
 
-    public View setValue(int propertyID, Object value)
+    public View setValue(int propertyID, Object value, boolean isAppend, boolean isHTML)
     {
         for (MyKeyValue kv : ItemsHolder)
             if (kv.Key == (propertyID))
             {
                 if (kv.clazz == TextView.class)
                 {
-                    ((TextView) kv.Value).setText(String.valueOf(value));
+                    TextView tv = ((TextView) kv.Value);
+                    if (isAppend)
+                        tv.append(String.valueOf(value));
+                    else
+                        tv.setText(isHTML ? Html.fromHtml(String.valueOf(value)) : String.valueOf(value));
+
                     return kv.Value;
                 }
                 else if (kv.clazz == EditText.class)
                 {
-                    ((EditText) kv.Value).setText(String.valueOf(value));
+                    EditText txt = ((EditText) kv.Value);
+                    if (isAppend)
+                        txt.append(String.valueOf(value));
+                    else
+                        txt.setText(isHTML ? Html.fromHtml(String.valueOf(value)) : String.valueOf(value));
                     return kv.Value;
                 }
                 else if (kv.clazz == Button.class)
                 {
-                    ((Button) kv.Value).setText(String.valueOf(value));
+                    Button btn = ((Button) kv.Value);
+                    if (isAppend)
+                        btn.append(String.valueOf(value));
+                    else
+                        btn.setText(isHTML ? Html.fromHtml(String.valueOf(value)) : String.valueOf(value));
                     return kv.Value;
                 }
                 else if (kv.clazz == CheckBox.class)

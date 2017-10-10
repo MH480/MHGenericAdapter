@@ -1,6 +1,5 @@
 package mh.sanwix.com.GenericAdapter;
 
-import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.support.v7.widget.RecyclerView;
 
@@ -155,11 +154,10 @@ interface MHIBaseAdapter<T>
 
     /**
      * creates a listener item click for recyclerview
-     * @param context current application context
      * @param _rv recycler view to trigger item`s click
      * @param listener call back on row click or row childeren click
      * @return RecyclerView.OnItemTouchListener
      */
-    RecyclerView.OnItemTouchListener buildTouchItemListener(Context context, RecyclerView _rv, MHOnItemClickListener listener);
+    RecyclerView.OnItemTouchListener buildTouchItemListener(RecyclerView _rv, MHOnItemClickListener listener);
 
 }
