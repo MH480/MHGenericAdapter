@@ -5,9 +5,11 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -24,6 +26,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     //region Const Values
     private static final int EMPTY_VIEW_TYPE = 455;
     private static final int MAIN_VIEW_TYPE = 479;
+    private static final int LAZY_VIEW_TYPE = 915;
     //endregion
 
     //region Models
@@ -40,6 +43,10 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     private boolean isSelectable;
     private boolean isMultiSelection;
     private boolean hasEmptyView;
+    private View LazyView;
+    private boolean hasLazyView;
+    private boolean isLazyLoading;
+    private int lazyLoadingPosition;
 
     //endregion
 
@@ -50,6 +57,8 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     private int resId;
     @LayoutRes
     private int resId_empty;
+    @LayoutRes
+    private int resId_lazy;
 
 
     public MHRecyclerAdapter(Class<VHModel> myVHModelClass)
@@ -105,7 +114,11 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         _selectedItems = new SparseBooleanArray();
         listeners = new ArrayList<>();
         hasEmptyView = false;
+        isLazyLoading = false;
+        resId_lazy = -1;
         propertiesNames = new ArrayList<>();
+
+
 
     }
 
@@ -129,7 +142,6 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     public void setBindViewCallBack(MHIonBindView bindView)
     {
         this.bindView = bindView;
-        notifyDataSetChanged();
     }
 
     /**
@@ -140,7 +152,6 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     public void addListener(@IdRes int propertyID)
     {
         this.listeners.add(new MyKeyValue(propertyID, null));
-        notifyDataSetChanged();
     }
 
     /**
@@ -151,7 +162,6 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         if (this.listeners.size() > 0)
         {
             this.listeners.remove(listeners.size() - 1);
-            notifyDataSetChanged();
         }
     }
 
@@ -175,6 +185,23 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
             throw new RuntimeException("Could not found layout in class " + emptyVHModelClass.getSimpleName() + "\n are you missing an annotaion ?");
         MyEmptyVH = emptyVHModelClass;
         hasEmptyView = true;
+    }
+
+    @Override
+    public void setLazyView(View _lazyView)
+    {
+        if (_lazyView != null)
+        {
+            this.LazyView = _lazyView;
+            hasLazyView = true;
+        }
+    }
+
+    @Override
+    public void setLazyView(@LayoutRes int _lazyViewId)
+    {
+        resId_lazy = _lazyViewId;
+        hasLazyView = true;
     }
 
 
@@ -203,6 +230,20 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
             propertiesNames = getPropertiesNames(items.get(0));
             notifyItemRangeInserted(0, _items.size());
         }
+    }
+
+    @Override
+    public int addItem(Model _item)
+    {
+        if (items != null)
+        {
+            items.add(_item);
+            int pos = items.size() - 1;
+            notifyItemInserted(pos);
+            return pos;
+        }
+        else
+            return -1;
     }
 
     private List<String> getPropertiesNames(Model m)
@@ -364,14 +405,17 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     }
 
     @Override
-    public void beginLazyLoading(RecyclerView.ViewHolder vh)
+    public void beginLazyLoading()
     {
-
+        isLazyLoading = true;
+        lazyLoadingPosition = addItem(null);
     }
 
     @Override
-    public void endLazyLoading(RecyclerView.ViewHolder vh)
+    public void endLazyLoading()
     {
+        isLazyLoading = false;
+        remItem(lazyLoadingPosition);
 
     }
 
@@ -387,9 +431,11 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         click.setIds(ids);
         return click;
     }
-    //endregion
 
-    @Override
+    public RecyclerView.OnScrollListener buildScrollListener(MHIonScrolling scrolling)
+    {
+        return new MHonScroll(scrolling);
+    }
     public MHViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
         MHViewHolder<?> mhvh = null;
@@ -401,6 +447,17 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
                 {
                     v = LayoutInflater.from(parent.getContext()).inflate(resId_empty, parent, false);
                     mhvh = new MHViewHolder<>(v, MyEmptyVH);
+                }
+                break;
+            case LAZY_VIEW_TYPE:
+                if (hasLazyView)
+                {
+                    if (LazyView == null && resId_lazy != -1)
+                        v = LayoutInflater.from(parent.getContext()).inflate(resId_lazy, parent, false);
+                    else
+                        v = LazyView;
+
+                    mhvh = new MHViewHolder<>(v, null);
                 }
                 break;
             case MAIN_VIEW_TYPE:
@@ -418,8 +475,13 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     {
         if (holder == null)
             return;
-        if (getItemViewType(position) == EMPTY_VIEW_TYPE)
-            return;
+        switch (getItemViewType(position))
+        {
+            case EMPTY_VIEW_TYPE:
+            case LAZY_VIEW_TYPE:
+                return;
+            default:
+        }
 
         Model m = items.get(position);
         List<View> childs = new ArrayList<>();
@@ -450,19 +512,14 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         if (bindView != null && holder.itemView instanceof ViewGroup)
         {
             View[] array = new View[0];
-            try
+
+            if (childs.size() > 0)
             {
                 array = new View[childs.size()];
                 childs.toArray(array);
             }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-            finally
-            {
-                bindView.BindViewHolder((ViewGroup) holder.itemView, holder.getMyModel(), position, array);
-            }
+            bindView.BindViewHolder((ViewGroup) holder.itemView, holder.getMyModel(), position, array);
+
         }
 
     }
@@ -470,7 +527,12 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     @Override
     public int getItemViewType(int position)
     {
-        return hasEmptyView && items.size() == 0 ? EMPTY_VIEW_TYPE : MAIN_VIEW_TYPE;
+        int result = hasEmptyView && items.size() == 0 ? EMPTY_VIEW_TYPE : MAIN_VIEW_TYPE;
+        if (isLazyLoading && hasLazyView && position == lazyLoadingPosition)
+        {
+            result = LAZY_VIEW_TYPE;
+        }
+        return result;
     }
 
     @Override

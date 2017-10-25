@@ -11,9 +11,9 @@ public class MyVHModel
 {
 
     @MHBindView(value = R.id.tvSubTitle,isClickable = true)
-    public Button tvTitle;
+    public Button tvSubTitle;
     @MHBindView(R.id.tvTitle)
-    public CheckBox tvSubTitle;
+    public CheckBox tvTitle;
 
 
 }

@@ -2,6 +2,7 @@ package mh.sanwix.com.GenericAdapter;
 
 import android.support.annotation.LayoutRes;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import java.util.List;
 
@@ -25,6 +26,9 @@ interface MHIBaseAdapter<T>
      */
     <EmptyVH extends Object> void setEmptyView(@LayoutRes int id,Class<EmptyVH> emptyVHModelClass);
 
+    void setLazyView(View _lazyView);
+    void setLazyView(@LayoutRes int _lazyViewId);
+
     /**
      * determins adapter has an empty view
      * @return returns true if empty view set , otherwise false
@@ -44,6 +48,11 @@ interface MHIBaseAdapter<T>
      * @param _items list of given generic type model
      */
     void setItems(List<T> _items);
+    /**
+     * it adds found property with clickable MHBindView annotation on top of stack
+     * @param _item an item of given generic type model
+     */
+    int addItem(T _item);
 
     /**
      * returns item as model at specific index
@@ -141,16 +150,15 @@ interface MHIBaseAdapter<T>
     void appendItems(List<T> appends);
 
     /**
-     * not implemened yet
-     * @param vh view model
+     * begins loading
+     *
      */
-    void beginLazyLoading(RecyclerView.ViewHolder vh);
+    void beginLazyLoading();
 
     /**
-     * not implemened yet
-     * @param vh view model
+     * ends loading
      */
-    void endLazyLoading(RecyclerView.ViewHolder vh);
+    void endLazyLoading();
 
     /**
      * creates a listener item click for recyclerview

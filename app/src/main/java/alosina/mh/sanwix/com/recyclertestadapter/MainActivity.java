@@ -1,6 +1,7 @@
 package alosina.mh.sanwix.com.recyclertestadapter;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -42,6 +44,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mAdapter.setEmptyView(MyEmptyVH.class);
         mAdapter.setBindViewCallBack(this);
         mRecycler.addOnItemTouchListener(mAdapter.buildTouchItemListener(mRecycler, this));
+        mAdapter.setLazyView(R.layout.layout_item_waiting);
+        mAdapter.beginLazyLoading();
+        new CountDownTimer(5000, 1000)
+        {
+            @Override
+            public void onTick(long millisUntilFinished)
+            {
+                Log.i(" MH TAG", "onTick: "  + millisUntilFinished);
+            }
+
+            @Override
+            public void onFinish()
+            {
+                mAdapter.endLazyLoading();
+                Toast.makeText(MainActivity.this, "finished", Toast.LENGTH_SHORT).show();
+            }
+        }.start();
     }
 
 
