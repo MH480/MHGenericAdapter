@@ -35,25 +35,22 @@ class MHonScroll extends RecyclerView.OnScrollListener
     {
         super.onScrolled(recyclerView, dx, dy);
         MHScrollState state;
-        View child = recyclerView.findChildViewUnder(dx, dy);
-        int LastChildInAdapter = recyclerView.getAdapter().getItemCount() - 1;;
+        int LastChildInAdapter = recyclerView.getAdapter().getItemCount() - 1;
 
-        if (child != null)
-        {
-            int pos = recyclerView.getChildAdapterPosition(child);
+        int pos = getFirstItemVisible(recyclerView);
 
-            if (pos == 0)
-                state = MHScrollState.Top;
-            else if (pos == LastChildInAdapter)
-                state = MHScrollState.Bottom;
-            else if (dx < dxOld || dy < dyOld)
-                state = MHScrollState.MoveToBottom;
-            else
-                state = MHScrollState.MoveToTop;
-            dxOld = dx;
-            dyOld = dy;
-            onScrolling.onScrolling(child, pos, dx, dy, state);
-        }
+        if (pos == 0)
+            state = MHScrollState.Top;
+        else if (pos == LastChildInAdapter)
+            state = MHScrollState.Bottom;
+        else if (dx < dxOld || dy < dyOld)
+            state = MHScrollState.MoveToBottom;
+        else
+            state = MHScrollState.MoveToTop;
+        dxOld = dx;
+        dyOld = dy;
+        onScrolling.onScrolling(null, pos, dx, dy, state);
+
     }
 
 
