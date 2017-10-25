@@ -28,7 +28,6 @@ class MHonScroll extends RecyclerView.OnScrollListener
     public void onScrollStateChanged(RecyclerView recyclerView, int newState)
     {
         super.onScrollStateChanged(recyclerView, newState);
-        getFirstItemVisible(recyclerView);
     }
 
     @Override
@@ -37,8 +36,8 @@ class MHonScroll extends RecyclerView.OnScrollListener
         super.onScrolled(recyclerView, dx, dy);
         MHScrollState state;
         View child = recyclerView.findChildViewUnder(dx, dy);
-        int FirstItemVisible = 0;
-        int LastChildInAdapter = getFirstItemVisible(recyclerView);
+        int LastChildInAdapter = recyclerView.getAdapter().getItemCount() - 1;;
+
         if (child != null)
         {
             int pos = recyclerView.getChildAdapterPosition(child);
@@ -47,11 +46,12 @@ class MHonScroll extends RecyclerView.OnScrollListener
                 state = MHScrollState.Top;
             else if (pos == LastChildInAdapter)
                 state = MHScrollState.Bottom;
-            else if (dx < dxOld)
+            else if (dx < dxOld || dy < dyOld)
                 state = MHScrollState.MoveToBottom;
             else
                 state = MHScrollState.MoveToTop;
-
+            dxOld = dx;
+            dyOld = dy;
             onScrolling.onScrolling(child, pos, dx, dy, state);
         }
     }
@@ -61,7 +61,7 @@ class MHonScroll extends RecyclerView.OnScrollListener
     {
         int FirstItemVisible = 0;
         RecyclerView.LayoutManager lm = rc.getLayoutManager();
-        int LastChildInAdapter = rc.getAdapter().getItemCount() - 1;
+
 
         if (lm instanceof GridLayoutManager)
         {
@@ -83,6 +83,8 @@ class MHonScroll extends RecyclerView.OnScrollListener
                     FirstItemVisible = cell[0];
             }
         }
-        return LastChildInAdapter;
+        return FirstItemVisible;
     }
+
+
 }
