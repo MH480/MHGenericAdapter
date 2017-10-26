@@ -233,6 +233,13 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     }
 
     @Override
+    public void clearItems()
+    {
+        items.clear();
+        notifyDataSetChanged();
+    }
+
+    @Override
     public int addItem(Model _item)
     {
         if (items != null)
@@ -436,6 +443,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     {
         return new MHonScroll(scrolling);
     }
+
     public MHViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
         MHViewHolder<?> mhvh = null;

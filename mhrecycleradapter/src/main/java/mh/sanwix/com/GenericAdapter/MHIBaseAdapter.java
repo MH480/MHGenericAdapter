@@ -48,6 +48,10 @@ interface MHIBaseAdapter<T>
      * @param _items list of given generic type model
      */
     void setItems(List<T> _items);
+
+    void clearItems();
+
+
     /**
      * it adds found property with clickable MHBindView annotation on top of stack
      * @param _item an item of given generic type model
