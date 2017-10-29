@@ -10,9 +10,9 @@ import mh.sanwix.com.GenericAdapter.MHBindView;
 public class MyVHModel
 {
 
-    @MHBindView(value = R.id.tvSubTitle,isClickable = true)
+    @MHBindView(value = R.id.btn,isClickable = true)
     public Button tvSubTitle;
-    @MHBindView(R.id.tvTitle)
+    @MHBindView(R.id.chk)
     public CheckBox tvTitle;
 
 

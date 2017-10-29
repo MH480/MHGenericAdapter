@@ -149,7 +149,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
     public View setValue(int propertyID, Object value, boolean isAppend, boolean isHTML)
     {
         for (MyKeyValue kv : ItemsHolder)
-            if (kv.Key == (propertyID))
+            if (kv.Key == (propertyID) && kv.Value != null)
             {
                 if (kv.clazz == TextView.class)
                 {

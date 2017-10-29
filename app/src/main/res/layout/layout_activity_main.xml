@@ -7,6 +7,12 @@
     android:layout_height="match_parent"
     tools:context="alosina.mh.sanwix.com.recyclertestadapter.MainActivity">
 
+    <alosina.mh.sanwix.com.recyclertestadapter.MySemiFram
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+
+    </alosina.mh.sanwix.com.recyclertestadapter.MySemiFram>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/mrecycler"
         android:layout_width="match_parent"

@@ -18,12 +18,23 @@ public class MHItemHeaderDecoration extends RecyclerView.ItemDecoration
 {
     private  MHIstickyHeader stickyHeader;
     private int mStickyHeaderHeight;
+    private int position;
+
+    public void setPosition(int _position)
+    {
+        position = _position;
+    }
+
+    public int getPosition()
+    {
+        return position;
+    }
 
     public MHItemHeaderDecoration(RecyclerView recyclerView, @NonNull MHIstickyHeader listener) {
         stickyHeader = listener;
 
         // On Sticky Header Click
-        recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+        /*recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
             public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
                 if (motionEvent.getY() <= mStickyHeaderHeight) {
                     // Handle the clicks on the header here ...
@@ -39,7 +50,7 @@ public class MHItemHeaderDecoration extends RecyclerView.ItemDecoration
             public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
 
             }
-        });
+        });*/
     }
 
     @Override
@@ -72,8 +83,7 @@ public class MHItemHeaderDecoration extends RecyclerView.ItemDecoration
         drawHeader(c, currentHeader);
     }
 
-    private View getHeaderViewForItem(int itemPosition, RecyclerView parent) {
-        int headerPosition = stickyHeader.getHeaderPositionForItem(itemPosition);
+    private View getHeaderViewForItem(int headerPosition, RecyclerView parent) {
         int layoutResId = stickyHeader.getHeaderLayout(headerPosition);
         View header = LayoutInflater.from(parent.getContext()).inflate(layoutResId, parent, false);
         stickyHeader.bindHeaderData(header, headerPosition);

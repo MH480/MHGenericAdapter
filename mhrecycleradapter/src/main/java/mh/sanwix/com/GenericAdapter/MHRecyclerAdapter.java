@@ -27,6 +27,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     private static final int EMPTY_VIEW_TYPE = 455;
     private static final int MAIN_VIEW_TYPE = 479;
     private static final int LAZY_VIEW_TYPE = 915;
+    private static final int HEADER_VIEW_TYPE = 466;
     //endregion
 
     //region Models
@@ -47,11 +48,13 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     private boolean hasLazyView;
     private boolean isLazyLoading;
     private int lazyLoadingPosition;
+    private MHItemHeaderDecoration StickyHeader;
 
     //endregion
 
     //interface
     private MHIonBindView bindView;
+    private MHIstickyHeader StickyHeaderListener;
 
     @LayoutRes
     private int resId;
@@ -166,6 +169,8 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     }
 
     //region External interfaces Methods
+
+
 
 
     @Override
@@ -444,6 +449,12 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         return new MHonScroll(scrolling);
     }
 
+    public RecyclerView.ItemDecoration buildStickyHeader(RecyclerView _rv,MHIstickyHeader listener)
+    {
+        return StickyHeader = new MHItemHeaderDecoration(_rv,StickyHeaderListener = listener);
+    }
+
+
     public MHViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
         MHViewHolder<?> mhvh = null;
@@ -468,6 +479,14 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
                     mhvh = new MHViewHolder<>(v, null);
                 }
                 break;
+            case HEADER_VIEW_TYPE:
+                if (StickyHeaderListener != null && StickyHeader != null)
+                {
+                    int pos = StickyHeader.getPosition();
+                    v = LayoutInflater.from(parent.getContext()).inflate(StickyHeaderListener.getHeaderLayout(pos), parent, false);
+                    mhvh = new MHViewHolder<VHModel>(v, null);
+                }
+                break;
             case MAIN_VIEW_TYPE:
             default:
                 v = LayoutInflater.from(parent.getContext()).inflate(resId, parent, false);
@@ -475,6 +494,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
 
                 break;
         }
+
         return mhvh;
     }
 
@@ -483,38 +503,53 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     {
         if (holder == null)
             return;
+
         switch (getItemViewType(position))
         {
             case EMPTY_VIEW_TYPE:
             case LAZY_VIEW_TYPE:
                 return;
+            case HEADER_VIEW_TYPE:
+                if (StickyHeaderListener != null && StickyHeader != null)
+                {
+                    StickyHeaderListener.bindHeaderData(holder.itemView,position);
+                }
+                return;
             default:
         }
+
 
         Model m = items.get(position);
         List<View> childs = new ArrayList<>();
         Class<Model> clazz = (Class<Model>) m.getClass();
         for (String propName : propertiesNames)
+        {
+            Field f = null;
             try
             {
-                Field f = clazz.getDeclaredField(propName);
-                MHBindView col = f.getAnnotation(MHBindView.class);
-                if (col != null)
-                {
-                    f.setAccessible(true);
-                    Object value = f.get(m);
-                    View j = holder.setValue(col.value(), value, col.isTextAppend(), col.isHtml());
-                    childs.add(j);
-                }
+                f = clazz.getDeclaredField(propName);
             }
             catch (NoSuchFieldException e)
             {
                 e.printStackTrace();
             }
-            catch (IllegalAccessException e)
+            MHBindView col = f.getAnnotation(MHBindView.class);
+            if (col != null)
             {
-                e.printStackTrace();
+                f.setAccessible(true);
+                Object value = null;
+                try
+                {
+                    value = f.get(m);
+                }
+                catch (IllegalAccessException e)
+                {
+                    e.printStackTrace();
+                }
+                View j = holder.setValue(col.value(), value, col.isTextAppend(), col.isHtml());
+                childs.add(j);
             }
+        }
 
 
         if (bindView != null && holder.itemView instanceof ViewGroup)
@@ -539,6 +574,11 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         if (isLazyLoading && hasLazyView && position == lazyLoadingPosition)
         {
             result = LAZY_VIEW_TYPE;
+        }
+        if (StickyHeaderListener != null && StickyHeaderListener.isHeader(position) && StickyHeader != null)
+        {
+            result = HEADER_VIEW_TYPE;
+            StickyHeader.setPosition(position);
         }
         return result;
     }

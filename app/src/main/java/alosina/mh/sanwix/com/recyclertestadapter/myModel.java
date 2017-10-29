@@ -4,10 +4,10 @@ import mh.sanwix.com.GenericAdapter.MHBindView;
 
 public class myModel
 {
-    @MHBindView(value = R.id.tvTitle)
+    @MHBindView(value = R.id.chk)
     public boolean data;
 
-    @MHBindView(value = R.id.tvSubTitle)
+    @MHBindView(value = R.id.btn)
     public String salam;
 
 

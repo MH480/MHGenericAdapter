@@ -8,7 +8,6 @@ import android.view.View;
 
 public interface MHIstickyHeader
 {
-    int getHeaderPositionForItem(int itemPosition);
     int getHeaderLayout(int headerPosition);
     void bindHeaderData(View header, int headerPosition);
     boolean isHeader(int itemPosition);
