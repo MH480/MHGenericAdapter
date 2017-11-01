@@ -1,6 +1,8 @@
 package mh.sanwix.com.GenericAdapter;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.ColorSpace;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -202,7 +204,13 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                         ((ImageButton) kv.Value).setImageDrawable(((Drawable) value));
                     else if (value instanceof Bitmap)
                         ((ImageButton) kv.Value).setImageBitmap(((Bitmap) value));
-
+                    else if (value instanceof String)
+                    {
+                        String strColor = (String) value;
+                        if (!strColor.startsWith("#"))
+                            strColor = "#" + strColor;
+                        ((ImageButton) kv.Value).setBackgroundColor(Color.parseColor(strColor));
+                    }
                     return kv.Value;
                 }
                 else if (kv.clazz == ImageView.class)
@@ -213,6 +221,13 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                         ((ImageView) kv.Value).setImageDrawable(((Drawable) value));
                     else if (value instanceof Bitmap)
                         ((ImageView) kv.Value).setImageBitmap(((Bitmap) value));
+                    else if (value instanceof String)
+                    {
+                        String strColor = (String) value;
+                        if (!strColor.startsWith("#"))
+                            strColor = "#" + strColor;
+                        ((ImageButton) kv.Value).setBackgroundColor(Color.parseColor(strColor));
+                    }
                     return kv.Value;
                 }
                 else if (kv.clazz == RatingBar.class)
