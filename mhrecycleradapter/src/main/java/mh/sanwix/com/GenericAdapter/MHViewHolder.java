@@ -226,7 +226,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                         String strColor = (String) value;
                         if (!strColor.startsWith("#"))
                             strColor = "#" + strColor;
-                        ((ImageButton) kv.Value).setBackgroundColor(Color.parseColor(strColor));
+                        ((ImageView) kv.Value).setBackgroundColor(Color.parseColor(strColor));
                     }
                     return kv.Value;
                 }
