@@ -29,4 +29,6 @@ public @interface MHBindView
     boolean isTextAppend() default false;
 
     boolean isHtml() default false;
+
+    boolean hiddenIfNull() default false;
 }
