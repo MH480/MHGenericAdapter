@@ -522,7 +522,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         Model m = items.get(position);
         List<View> childs = new ArrayList<>();
         Class<Model> clazz = (Class<Model>) m.getClass();
-        for (String propName : propertiesNames)
+        for (String propName : propertiesNames) // propertiesNames is string because i need property value with column i can`t get property value
         {
             Field f = null;
             try
@@ -533,7 +533,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
             {
                 e.printStackTrace();
             }
-            MHBindView col = f.getAnnotation(MHBindView.class);
+            MHBindView col = f != null ? f.getAnnotation(MHBindView.class) : null;
             if (col != null)
             {
                 f.setAccessible(true);
@@ -546,7 +546,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
                 {
                     e.printStackTrace();
                 }
-                View j = holder.setValue(col.value(), value, col.isTextAppend(), col.isHtml());
+                View j = holder.setValue(col,col.isPosition() ? position : value);
                 childs.add(j);
             }
         }

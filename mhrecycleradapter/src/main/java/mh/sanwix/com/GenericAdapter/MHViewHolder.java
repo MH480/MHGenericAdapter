@@ -31,14 +31,20 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
 {
     private T MyModel;
     private List<MyKeyValue> ItemsHolder;
-
+    private boolean hasPosition;
     public MHViewHolder(View itemView, Class<T> model)
     {
         super(itemView);
         ItemsHolder = new ArrayList<>();
+        hasPosition = false;
         if (model != null)
             setViewModel(model, itemView);
 
+    }
+
+    public boolean hasPosition()
+    {
+        return hasPosition;
     }
 
     private void setViewModel(Class<T> model, View itemView)
@@ -75,7 +81,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                     if (f.getType() == TextView.class)
                     {
                         TextView tv = itemView.findViewById(col.value());
-                        ItemsHolder.add(new MyKeyValue(col.value(), tv, TextView.class));
+                        ItemsHolder.add(new MyKeyValue(col.value(), tv, TextView.class, hasPosition = col.isPosition()));
                         f.set(MyModel, tv);
                     }
                     else if (f.getType() == Button.class)
@@ -146,6 +152,110 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
         }
 
 
+    }
+
+    public View setValue(MHBindView col,Object value)
+    {
+        int propertyID = col.value();
+        boolean isAppend = col.isTextAppend(), isHTML = col.isHtml(),ifNullinVisible = col.hiddenIfNull();
+        for (MyKeyValue kv : ItemsHolder)
+            if (kv.Key == (propertyID) && kv.Value != null)
+            {
+                if (kv.clazz == TextView.class)
+                {
+                    TextView tv = ((TextView) kv.Value);
+                    if (value == null && ifNullinVisible)
+                        tv.setVisibility(View.GONE);
+                    else
+                    {
+                        tv.setVisibility(View.VISIBLE);
+                        if (isAppend)
+                            tv.append(String.valueOf(value));
+                        else
+                            tv.setText(isHTML ? Html.fromHtml(String.valueOf(value)) : String.valueOf(value));
+                    }
+                    return kv.Value;
+                }
+                else if (kv.clazz == EditText.class)
+                {
+                    EditText txt = ((EditText) kv.Value);
+                    if (isAppend)
+                        txt.append(String.valueOf(value));
+                    else
+                        txt.setText(isHTML ? Html.fromHtml(String.valueOf(value)) : String.valueOf(value));
+                    return kv.Value;
+                }
+                else if (kv.clazz == Button.class)
+                {
+                    Button btn = ((Button) kv.Value);
+                    if (isAppend)
+                        btn.append(String.valueOf(value));
+                    else
+                        btn.setText(isHTML ? Html.fromHtml(String.valueOf(value)) : String.valueOf(value));
+                    return kv.Value;
+                }
+                else if (kv.clazz == CheckBox.class)
+                {
+                    ((CheckBox) kv.Value).setChecked((Boolean) value);
+                    return kv.Value;
+                }
+                else if (kv.clazz == RadioButton.class)
+                {
+                    ((RadioButton) kv.Value).setChecked((Boolean) value);
+                    return kv.Value;
+                }
+                else if (kv.clazz == Switch.class)
+                {
+                    ((Switch) kv.Value).setChecked((Boolean) value);
+                    return kv.Value;
+                }
+                else if (kv.clazz == ImageButton.class)
+                {
+                    if (value instanceof Integer)
+                        ((ImageButton) kv.Value).setImageDrawable(this.itemView.getContext().getResources().getDrawable(Integer.parseInt(value + "")));
+                    else if (value instanceof Drawable)
+                        ((ImageButton) kv.Value).setImageDrawable(((Drawable) value));
+                    else if (value instanceof Bitmap)
+                        ((ImageButton) kv.Value).setImageBitmap(((Bitmap) value));
+                    else if (value instanceof String)
+                    {
+                        String strColor = (String) value;
+                        if (!strColor.startsWith("#"))
+                            strColor = "#" + strColor;
+                        ((ImageButton) kv.Value).setBackgroundColor(Color.parseColor(strColor));
+                    }
+                    return kv.Value;
+                }
+                else if (kv.clazz == ImageView.class)
+                {
+                    if (value instanceof Integer)
+                        ((ImageView) kv.Value).setImageDrawable(this.itemView.getContext().getResources().getDrawable(Integer.parseInt(value + "")));
+                    else if (value instanceof Drawable)
+                        ((ImageView) kv.Value).setImageDrawable(((Drawable) value));
+                    else if (value instanceof Bitmap)
+                        ((ImageView) kv.Value).setImageBitmap(((Bitmap) value));
+                    else if (value instanceof String)
+                    {
+                        String strColor = (String) value;
+                        if (!strColor.startsWith("#"))
+                            strColor = "#" + strColor;
+                        ((ImageView) kv.Value).setBackgroundColor(Color.parseColor(strColor));
+                    }
+                    return kv.Value;
+                }
+                else if (kv.clazz == RatingBar.class)
+                {
+                    ((RatingBar) kv.Value).setRating((Float.parseFloat(value + "")));
+                    return kv.Value;
+                }
+                else
+                {
+                    return kv.Value;
+                }
+
+
+            }
+        return null;
     }
 
     public View setValue(int propertyID, Object value, boolean isAppend, boolean isHTML)
@@ -244,7 +354,6 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
             }
         return null;
     }
-
 
     public void setListener(int propertyID, Object value)
     {

@@ -31,4 +31,6 @@ public @interface MHBindView
     boolean isHtml() default false;
 
     boolean hiddenIfNull() default false;
+
+    boolean isPosition() default false;
 }
