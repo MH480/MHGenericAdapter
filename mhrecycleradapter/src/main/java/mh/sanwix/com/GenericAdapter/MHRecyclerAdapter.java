@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
@@ -122,7 +123,6 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         propertiesNames = new ArrayList<>();
 
 
-
     }
 
     /**
@@ -169,8 +169,6 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     }
 
     //region External interfaces Methods
-
-
 
 
     @Override
@@ -274,6 +272,28 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
                         addListener(col.value());
                 }
             }
+        return propssss;
+    }
+
+    private List<String> getMethodNames(Model mo)
+    {
+        List<String> propssss = new ArrayList<>();
+        Class<Model> clazz = (Class<Model>) mo.getClass();
+
+        for (Method m : clazz.getDeclaredMethods())
+        {
+            int modifier = m.getModifiers();
+            if (Modifier.isPublic(modifier) && !Modifier.isFinal(modifier) && !Modifier.isStatic(modifier))
+            {
+                MHBindView col = m.getAnnotation(MHBindView.class);
+                if (col != null)
+                {
+                    propssss.add(m.getName());
+                    if (col.isClickable())
+                        addListener(col.value());
+                }
+            }
+        }
         return propssss;
     }
 
@@ -449,9 +469,9 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         return new MHonScroll(scrolling);
     }
 
-    public RecyclerView.ItemDecoration buildStickyHeader(RecyclerView _rv,MHIstickyHeader listener)
+    public RecyclerView.ItemDecoration buildStickyHeader(RecyclerView _rv, MHIstickyHeader listener)
     {
-        return StickyHeader = new MHItemHeaderDecoration(_rv,StickyHeaderListener = listener);
+        return StickyHeader = new MHItemHeaderDecoration(_rv, StickyHeaderListener = listener);
     }
 
 
@@ -512,7 +532,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
             case HEADER_VIEW_TYPE:
                 if (StickyHeaderListener != null && StickyHeader != null)
                 {
-                    StickyHeaderListener.bindHeaderData(holder.itemView,position);
+                    StickyHeaderListener.bindHeaderData(holder.itemView, position);
                 }
                 return;
             default:
@@ -546,7 +566,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
                 {
                     e.printStackTrace();
                 }
-                View j = holder.setValue(col,col.isPosition() ? position : value);
+                View j = holder.setValue(col, col.isPosition() ? position : value);
                 childs.add(j);
             }
         }

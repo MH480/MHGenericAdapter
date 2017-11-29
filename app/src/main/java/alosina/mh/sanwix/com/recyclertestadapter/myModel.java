@@ -1,6 +1,7 @@
 package alosina.mh.sanwix.com.recyclertestadapter;
 
 import mh.sanwix.com.GenericAdapter.MHBindView;
+import mh.sanwix.com.GenericAdapter.MHBindViewChild;
 
 public class myModel
 {
@@ -19,6 +20,11 @@ public class myModel
 
     }
 
+    @MHBindViewChild(R.id.btn)
+    public String get()
+    {
 
+        return "";
+    }
 
 }
