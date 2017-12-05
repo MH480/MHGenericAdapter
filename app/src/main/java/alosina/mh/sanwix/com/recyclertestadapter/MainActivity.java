@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         models.add(new myModel("asb"));
         models.add(new myModel("asb"));
         models.add(new myModel("asb"));
-        models.add(new myModel("asb"));
+
 
 
         mAdapter = new MHRecyclerAdapter<myModel, MyVHModel>(MyVHModel.class);
@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRecycler.setAdapter(mAdapter);
         mAdapter.setItems(models);
+        models.add(new myModel("asb"));
+        models.add(new myModel("asb"));
         mAdapter.setEmptyView(MyEmptyVH.class);
         mAdapter.setBindViewCallBack(this);
         mRecycler.addOnItemTouchListener(mAdapter.buildTouchItemListener(mRecycler, this));
@@ -84,7 +86,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             {
                 mAdapter.endLazyLoading();
                 mAdapter.setItems(models);
-                Toast.makeText(MainActivity.this, "finished", Toast.LENGTH_SHORT).show();
             }
         }.start();
     }

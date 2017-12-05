@@ -258,6 +258,96 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
         return null;
     }
 
+
+    public View setValue(MHBindViewAction col,Object value)
+    {
+        int propertyID = col.value();
+        for (MyKeyValue kv : ItemsHolder)
+            if (kv.Key == (propertyID) && kv.Value != null)
+            {
+                if (kv.clazz == TextView.class)
+                {
+                    TextView tv = ((TextView) kv.Value);
+                    tv.setText(String.valueOf(value));
+
+                    return kv.Value;
+                }
+                else if (kv.clazz == EditText.class)
+                {
+                    EditText txt = ((EditText) kv.Value);
+                    txt.setText(String.valueOf(value));
+                    return kv.Value;
+                }
+                else if (kv.clazz == Button.class)
+                {
+                    Button btn = ((Button) kv.Value);
+                    btn.setText(String.valueOf(value));
+                    return kv.Value;
+                }
+                else if (kv.clazz == CheckBox.class)
+                {
+                    ((CheckBox) kv.Value).setChecked((Boolean) value);
+                    return kv.Value;
+                }
+                else if (kv.clazz == RadioButton.class)
+                {
+                    ((RadioButton) kv.Value).setChecked((Boolean) value);
+                    return kv.Value;
+                }
+                else if (kv.clazz == Switch.class)
+                {
+                    ((Switch) kv.Value).setChecked((Boolean) value);
+                    return kv.Value;
+                }
+                else if (kv.clazz == ImageButton.class)
+                {
+                    if (value instanceof Integer)
+                        ((ImageButton) kv.Value).setImageDrawable(this.itemView.getContext().getResources().getDrawable(Integer.parseInt(value + "")));
+                    else if (value instanceof Drawable)
+                        ((ImageButton) kv.Value).setImageDrawable(((Drawable) value));
+                    else if (value instanceof Bitmap)
+                        ((ImageButton) kv.Value).setImageBitmap(((Bitmap) value));
+                    else if (value instanceof String)
+                    {
+                        String strColor = (String) value;
+                        if (!strColor.startsWith("#"))
+                            strColor = "#" + strColor;
+                        ((ImageButton) kv.Value).setBackgroundColor(Color.parseColor(strColor));
+                    }
+                    return kv.Value;
+                }
+                else if (kv.clazz == ImageView.class)
+                {
+                    if (value instanceof Integer)
+                        ((ImageView) kv.Value).setImageDrawable(this.itemView.getContext().getResources().getDrawable(Integer.parseInt(value + "")));
+                    else if (value instanceof Drawable)
+                        ((ImageView) kv.Value).setImageDrawable(((Drawable) value));
+                    else if (value instanceof Bitmap)
+                        ((ImageView) kv.Value).setImageBitmap(((Bitmap) value));
+                    else if (value instanceof String)
+                    {
+                        String strColor = (String) value;
+                        if (!strColor.startsWith("#"))
+                            strColor = "#" + strColor;
+                        ((ImageView) kv.Value).setBackgroundColor(Color.parseColor(strColor));
+                    }
+                    return kv.Value;
+                }
+                else if (kv.clazz == RatingBar.class)
+                {
+                    ((RatingBar) kv.Value).setRating((Float.parseFloat(value + "")));
+                    return kv.Value;
+                }
+                else
+                {
+                    return kv.Value;
+                }
+
+
+            }
+        return null;
+    }
+
     public View setValue(int propertyID, Object value, boolean isAppend, boolean isHTML)
     {
         for (MyKeyValue kv : ItemsHolder)

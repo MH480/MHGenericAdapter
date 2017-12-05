@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     private SparseBooleanArray _selectedItems;
     private List<MyKeyValue> listeners;
     private List<String> propertiesNames;
+    private List<String> methodsNames;
     private boolean isSelectable;
     private boolean isMultiSelection;
     private boolean hasEmptyView;
@@ -114,13 +116,14 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         MyVHolder = myVHModelClass;
         this.isSelectable = isSelectable;
         this.isMultiSelection = isMultiSelection;
-        items = list;
+        items = list != null ? list : new ArrayList<Model>();
         _selectedItems = new SparseBooleanArray();
         listeners = new ArrayList<>();
         hasEmptyView = false;
         isLazyLoading = false;
         resId_lazy = -1;
         propertiesNames = new ArrayList<>();
+        methodsNames = new ArrayList<>();
 
 
     }
@@ -227,10 +230,13 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     {
         if (_items != null && _items.size() > 0)
         {
-            items = new ArrayList<>();
-            notifyDataSetChanged();
+            int size = items.size();
+            items.clear();
+            if (size > 0)
+                notifyItemRangeRemoved(0, size);
             items.addAll(_items);
             propertiesNames = getPropertiesNames(items.get(0));
+            methodsNames = getMethodsNames(items.get(0));
             notifyItemRangeInserted(0, _items.size());
         }
     }
@@ -238,8 +244,11 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     @Override
     public void clearItems()
     {
+        int size = items.size();
         items.clear();
-        notifyDataSetChanged();
+        if (size > 0)
+            notifyItemRangeRemoved(0, size);
+
     }
 
     @Override
@@ -275,27 +284,24 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         return propssss;
     }
 
-    private List<String> getMethodNames(Model mo)
+    private List<String> getMethodsNames(Model model)
     {
         List<String> propssss = new ArrayList<>();
-        Class<Model> clazz = (Class<Model>) mo.getClass();
+        Class<Model> clazz = (Class<Model>) model.getClass();
 
         for (Method m : clazz.getDeclaredMethods())
-        {
-            int modifier = m.getModifiers();
-            if (Modifier.isPublic(modifier) && !Modifier.isFinal(modifier) && !Modifier.isStatic(modifier))
+            if (Modifier.isPublic(m.getModifiers()) && !Modifier.isFinal(m.getModifiers()) && !Modifier.isStatic(m.getModifiers()))
             {
-                MHBindView col = m.getAnnotation(MHBindView.class);
+                MHBindViewAction col = m.getAnnotation(MHBindViewAction.class);
                 if (col != null)
                 {
                     propssss.add(m.getName());
-                    if (col.isClickable())
-                        addListener(col.value());
                 }
             }
-        }
         return propssss;
     }
+
+
 
 
     @Override
@@ -539,9 +545,9 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         }
 
 
-        Model m = items.get(position);
+        Model model = items.get(position);
         List<View> childs = new ArrayList<>();
-        Class<Model> clazz = (Class<Model>) m.getClass();
+        Class<Model> clazz = (Class<Model>) model.getClass();
         for (String propName : propertiesNames) // propertiesNames is string because i need property value with column i can`t get property value
         {
             Field f = null;
@@ -560,13 +566,49 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
                 Object value = null;
                 try
                 {
-                    value = f.get(m);
+                    value = f.get(model);
                 }
                 catch (IllegalAccessException e)
                 {
                     e.printStackTrace();
                 }
                 View j = holder.setValue(col, col.isPosition() ? position : value);
+                childs.add(j);
+            }
+        }
+
+        for (String methName : methodsNames)
+        {
+            Method m = null;
+            try
+            {
+                m = clazz.getDeclaredMethod(methName);
+            }
+            catch (NoSuchMethodException e)
+            {
+                e.printStackTrace();
+            }
+            MHBindViewAction col = m != null ? m.getAnnotation(MHBindViewAction.class) : null;
+            if (col != null)
+            {
+                m.setAccessible(true);
+                Object value = null;
+                try
+                {
+                    if (m.getGenericParameterTypes().length == 0)
+                    {
+                        value = m.invoke(model,new Object[]{});
+                    }
+                }
+                catch (IllegalAccessException e)
+                {
+                    e.printStackTrace();
+                }
+                catch (InvocationTargetException e)
+                {
+                    e.printStackTrace();
+                }
+                View j = holder.setValue(col, value);
                 childs.add(j);
             }
         }
