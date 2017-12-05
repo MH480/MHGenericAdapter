@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.ColorSpace;
 import android.graphics.drawable.Drawable;
+import android.media.Rating;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
@@ -32,6 +33,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
     private T MyModel;
     private List<MyKeyValue> ItemsHolder;
     private boolean hasPosition;
+
     public MHViewHolder(View itemView, Class<T> model)
     {
         super(itemView);
@@ -154,10 +156,10 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
 
     }
 
-    public View setValue(MHBindView col,Object value)
+    public View setValue(MHBindView col, Object value)
     {
         int propertyID = col.value();
-        boolean isAppend = col.isTextAppend(), isHTML = col.isHtml(),ifNullinVisible = col.hiddenIfNull();
+        boolean isAppend = col.isTextAppend(), isHTML = col.isHtml(), ifNullinVisible = col.hiddenIfNull();
         for (MyKeyValue kv : ItemsHolder)
             if (kv.Key == (propertyID) && kv.Value != null)
             {
@@ -259,7 +261,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
     }
 
 
-    public View setValue(MHBindViewAction col,Object value)
+    public View setValue(MHBindViewAction col, Object value)
     {
         int propertyID = col.value();
         for (MyKeyValue kv : ItemsHolder)
@@ -269,6 +271,8 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                 {
                     TextView tv = ((TextView) kv.Value);
                     tv.setText(String.valueOf(value));
+                    if (col.hiddenIfNull())
+                        tv.setVisibility(View.GONE);
 
                     return kv.Value;
                 }
@@ -276,27 +280,40 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                 {
                     EditText txt = ((EditText) kv.Value);
                     txt.setText(String.valueOf(value));
+                    if (col.hiddenIfNull())
+                        txt.setVisibility(View.GONE);
                     return kv.Value;
                 }
                 else if (kv.clazz == Button.class)
                 {
                     Button btn = ((Button) kv.Value);
                     btn.setText(String.valueOf(value));
+                    if (col.hiddenIfNull())
+                        btn.setVisibility(View.GONE);
                     return kv.Value;
                 }
                 else if (kv.clazz == CheckBox.class)
                 {
-                    ((CheckBox) kv.Value).setChecked((Boolean) value);
+                    CheckBox chk = ((CheckBox) kv.Value);
+                    chk.setChecked((Boolean) value);
+                    if (col.hiddenIfNull())
+                        chk.setVisibility(View.GONE);
                     return kv.Value;
                 }
                 else if (kv.clazz == RadioButton.class)
                 {
-                    ((RadioButton) kv.Value).setChecked((Boolean) value);
+                    RadioButton btn = ((RadioButton) kv.Value);
+                    btn.setChecked((Boolean) value);
+                    if (col.hiddenIfNull())
+                        btn.setVisibility(View.GONE);
                     return kv.Value;
                 }
                 else if (kv.clazz == Switch.class)
                 {
-                    ((Switch) kv.Value).setChecked((Boolean) value);
+                    Switch swt = (Switch) kv.Value;
+                    swt.setChecked((Boolean) value);
+                    if (col.hiddenIfNull())
+                        swt.setVisibility(View.GONE);
                     return kv.Value;
                 }
                 else if (kv.clazz == ImageButton.class)
@@ -312,7 +329,10 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                         String strColor = (String) value;
                         if (!strColor.startsWith("#"))
                             strColor = "#" + strColor;
-                        ((ImageButton) kv.Value).setBackgroundColor(Color.parseColor(strColor));
+                        ImageButton img = ((ImageButton) kv.Value);
+                        img.setBackgroundColor(Color.parseColor(strColor));
+                        if (col.hiddenIfNull())
+                            img.setVisibility(View.GONE);
                     }
                     return kv.Value;
                 }
@@ -329,13 +349,19 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                         String strColor = (String) value;
                         if (!strColor.startsWith("#"))
                             strColor = "#" + strColor;
-                        ((ImageView) kv.Value).setBackgroundColor(Color.parseColor(strColor));
+                        ImageView img = ((ImageView) kv.Value);
+                        img.setBackgroundColor(Color.parseColor(strColor));
+                        if (col.hiddenIfNull())
+                            img.setVisibility(View.GONE);
                     }
                     return kv.Value;
                 }
                 else if (kv.clazz == RatingBar.class)
                 {
-                    ((RatingBar) kv.Value).setRating((Float.parseFloat(value + "")));
+                    RatingBar rat = ((RatingBar) kv.Value);
+                    rat.setRating((Float.parseFloat(value + "")));
+                    if (col.hiddenIfNull())
+                        rat.setVisibility(View.GONE);
                     return kv.Value;
                 }
                 else

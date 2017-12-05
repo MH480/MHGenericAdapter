@@ -13,4 +13,5 @@ import java.lang.annotation.Target;
 public @interface MHBindViewAction
 {
     int value();
+    boolean hiddenIfNull() default false;
 }
