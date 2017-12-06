@@ -241,6 +241,19 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         }
     }
 
+
+    public void setItems_NoAdnim(List<Model> _items)
+    {
+        if (_items != null && _items.size() > 0)
+        {
+            items = new ArrayList<>();
+            items.addAll(_items);
+            propertiesNames = getPropertiesNames(items.get(0));
+            methodsNames = getMethodsNames(items.get(0));
+            notifyDataSetChanged();
+        }
+    }
+
     @Override
     public void clearItems()
     {
