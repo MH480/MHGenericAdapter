@@ -458,16 +458,27 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     @Override
     public void beginLazyLoading()
     {
-        isLazyLoading = true;
-        lazyLoadingPosition = addItem(null);
+        if (hasLazyView)
+        {
+            isLazyLoading = true;
+            lazyLoadingPosition = addItem(null);
+        }
+    }
+
+    @Override
+    public boolean isLazyLoading()
+    {
+        return isLazyLoading;
     }
 
     @Override
     public void endLazyLoading()
     {
-        isLazyLoading = false;
-        remItem(lazyLoadingPosition);
-
+        if (hasLazyView && isLazyLoading)
+        {
+            isLazyLoading = false;
+            remItem(lazyLoadingPosition);
+        }
     }
 
     @Override

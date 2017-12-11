@@ -17,13 +17,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mh.sanwix.com.GenericAdapter.MHIonBindView;
+import mh.sanwix.com.GenericAdapter.MHIonScrolling;
 import mh.sanwix.com.GenericAdapter.MHIstickyHeader;
 import mh.sanwix.com.GenericAdapter.MHItemHeaderDecoration;
 import mh.sanwix.com.GenericAdapter.MHOnItemClickListener;
 import mh.sanwix.com.GenericAdapter.MHRecyclerAdapter;
+import mh.sanwix.com.GenericAdapter.MHScrollState;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnFocusChangeListener, MHOnItemClickListener, MHIonBindView, MHIstickyHeader
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnFocusChangeListener, MHOnItemClickListener, MHIonBindView, MHIstickyHeader, MHIonScrolling
 {
     List<myModel> models = new ArrayList<>();
     RecyclerView mRecycler;
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mAdapter.setEmptyView(MyEmptyVH.class);
         mAdapter.setBindViewCallBack(this);
         mRecycler.addOnItemTouchListener(mAdapter.buildTouchItemListener(mRecycler, this));
+        mRecycler.setOnScrollListener(mAdapter.buildScrollListener(this));
         mRecycler.addItemDecoration(mAdapter.buildStickyHeader(mRecycler,this));
         mAdapter.setLazyView(R.layout.layout_item_waiting);
         mAdapter.beginLazyLoading();
@@ -88,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mAdapter.setItems(models);
             }
         }.start();
+
+
+
     }
 
 
@@ -145,6 +151,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean isHeader(int itemPosition)
     {
         return itemPosition == 3;
+    }
+
+    @Override
+    public void onScrolling(View child, int position, int dx, int dy, MHScrollState state)
+    {
+        switch (state)
+        {
+            case Top:
+                Log.i(" MH ", "onScrolling: TOP : " + String.valueOf(position));
+                break;
+            case Bottom:
+                Log.i(" MH ", "onScrolling: Bottom : " + String.valueOf(position));
+                break;
+            case MoveToBottom:
+                //Log.i(" MH ", "onScrolling: Moving to Bottom");
+                break;
+            case MoveToTop:
+                //Log.i(" MH ", "onScrolling: Moving to TOP");
+                break;
+        }
     }
 }
 

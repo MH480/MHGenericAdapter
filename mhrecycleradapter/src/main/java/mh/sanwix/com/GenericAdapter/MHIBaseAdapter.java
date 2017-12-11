@@ -164,6 +164,9 @@ interface MHIBaseAdapter<T>
      */
     void endLazyLoading();
 
+    boolean isLazyLoading();
+
+
     /**
      * creates a listener item click for recyclerview
      * @param _rv recycler view to trigger item`s click

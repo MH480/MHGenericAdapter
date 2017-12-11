@@ -9,5 +9,6 @@ public enum MHScrollState
     Top,
     Bottom,
     MoveToBottom,
-    MoveToTop
+    MoveToTop,
+    NotScrolling
 }
