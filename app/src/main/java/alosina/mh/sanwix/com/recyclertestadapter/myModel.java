@@ -5,11 +5,11 @@ import mh.sanwix.com.GenericAdapter.MHBindViewAction;
 
 public class myModel
 {
-    @MHBindView(value = R.id.chk)
+    @MHBindView(value = R.id.chk,isHtml = true)
     public boolean data;
 
 
-    @MHBindView(value = R.id.btn)
+    @MHBindView(value = R.id.btn,isHtml = true)
     public String salam;
 
 
@@ -22,7 +22,7 @@ public class myModel
     }
 
 
-    @MHBindViewAction(R.id.btn)
+    //@MHBindViewAction(R.id.btn)
     public String get()
     {
 

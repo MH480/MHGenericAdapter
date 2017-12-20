@@ -36,7 +36,6 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     private Class<VHModel> MyVHolder;
     private List<Model> items;
     private Class<?> MyEmptyVH;
-
     //endregion
 
     //region Varriables
@@ -58,6 +57,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     //interface
     private MHIonBindView bindView;
     private MHIstickyHeader StickyHeaderListener;
+
 
     @LayoutRes
     private int resId;
@@ -228,12 +228,11 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     @Override
     public void setItems(List<Model> _items)
     {
-        if (_items != null && _items.size() > 0)
+        if (_items != null)
         {
             int size = items.size();
             items.clear();
-            if (size > 0)
-                notifyItemRangeRemoved(0, size);
+            notifyItemRangeRemoved(0, size);
             items.addAll(_items);
             propertiesNames = getPropertiesNames(items.get(0));
             methodsNames = getMethodsNames(items.get(0));
@@ -242,7 +241,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     }
 
 
-    public void setItems_NoAdnim(List<Model> _items)
+    public void setItems_NoAnim(List<Model> _items)
     {
         if (_items != null && _items.size() > 0)
         {
@@ -313,8 +312,6 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
             }
         return propssss;
     }
-
-
 
 
     @Override
@@ -621,7 +618,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
                 {
                     if (m.getGenericParameterTypes().length == 0)
                     {
-                        value = m.invoke(model,new Object[]{});
+                        value = m.invoke(model, new Object[]{});
                     }
                 }
                 catch (IllegalAccessException e)

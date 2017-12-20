@@ -174,7 +174,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                         if (isAppend)
                             tv.append(String.valueOf(value));
                         else
-                            tv.setText(isHTML ? Html.fromHtml(String.valueOf(value)) : String.valueOf(value));
+                            tv.setText(isHTML ? Html.fromHtml(String.valueOf(value)).toString() : String.valueOf(value));
                     }
                     return kv.Value;
                 }
@@ -184,7 +184,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                     if (isAppend)
                         txt.append(String.valueOf(value));
                     else
-                        txt.setText(isHTML ? Html.fromHtml(String.valueOf(value)) : String.valueOf(value));
+                        txt.setText(isHTML ? Html.fromHtml(String.valueOf(value)).toString() : String.valueOf(value));
                     return kv.Value;
                 }
                 else if (kv.clazz == Button.class)
@@ -193,7 +193,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                     if (isAppend)
                         btn.append(String.valueOf(value));
                     else
-                        btn.setText(isHTML ? Html.fromHtml(String.valueOf(value)) : String.valueOf(value));
+                        btn.setText(isHTML ? Html.fromHtml(String.valueOf(value)).toString() : String.valueOf(value));
                     return kv.Value;
                 }
                 else if (kv.clazz == CheckBox.class)
