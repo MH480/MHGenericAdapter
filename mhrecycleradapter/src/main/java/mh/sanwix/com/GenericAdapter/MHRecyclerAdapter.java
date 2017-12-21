@@ -228,29 +228,43 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     @Override
     public void setItems(List<Model> _items)
     {
-        if (_items != null)
+        if (_items == null)
+            _items = new ArrayList<>();
+
+        int size = items.size();
+        items.clear();
+        notifyItemRangeRemoved(0, size);
+        if (_items.size() > 0)
         {
-            int size = items.size();
-            items.clear();
-            notifyItemRangeRemoved(0, size);
             items.addAll(_items);
             propertiesNames = getPropertiesNames(items.get(0));
             methodsNames = getMethodsNames(items.get(0));
             notifyItemRangeInserted(0, _items.size());
         }
-    }
+        else
+        {
+            notifyDataSetChanged();
+        }
 
+
+    }
 
     public void setItems_NoAnim(List<Model> _items)
     {
-        if (_items != null && _items.size() > 0)
+        if (_items == null)
+            _items = new ArrayList<>();
+
+        int size = items.size();
+        items.clear();
+        items.addAll(_items);
+        if (items.size() > 0)
         {
-            items = new ArrayList<>();
-            items.addAll(_items);
             propertiesNames = getPropertiesNames(items.get(0));
             methodsNames = getMethodsNames(items.get(0));
-            notifyDataSetChanged();
         }
+        notifyDataSetChanged();
+
+
     }
 
     @Override
