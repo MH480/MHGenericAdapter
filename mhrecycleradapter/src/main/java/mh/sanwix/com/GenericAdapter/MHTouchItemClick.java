@@ -10,9 +10,7 @@ import android.view.ViewGroup;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
 /**
@@ -21,19 +19,21 @@ import java.util.Set;
 
 class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListener
 {
-    GestureDetector mGestureDetector;
-    RecyclerView rv;
-    Class<ViewHolderModel> viewHolderModel;
-    List<Integer> ClickableIds;
-    boolean isidOK;
+    private GestureDetector mGestureDetector;
+    private RecyclerView rv;
+    private Class<ViewHolderModel> viewHolderModel;
+    private List<Integer> ClickableIdsOnClick,clickable;
+    private boolean isVHoK;
     private MHOnItemClickListener mListener;
 
     public MHTouchItemClick(RecyclerView _rv, MHOnItemClickListener listener, Class<ViewHolderModel> myVHolder)
     {
-        ClickableIds = new ArrayList<>();
+        ClickableIdsOnClick = new ArrayList<>();
+        clickable = new ArrayList<>();
         mListener = listener;
         rv = _rv;
         setViewHolderModel(myVHolder);
+        //findonClickAnot(myVHolder);
         findIDS(myVHolder);
         mGestureDetector = new GestureDetector(_rv.getContext(), new GestureDetector.SimpleOnGestureListener()
         {
@@ -51,11 +51,11 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
                 if (raw == null)
                     return;
                 View clickedview = null;
-                if (isidOK)
+                if (isVHoK)
                 {
-                    for (int i = 0; i < ClickableIds.size(); i++)
+                    for (int i = 0; i < ClickableIdsOnClick.size(); i++)
                     {
-                        int id = ClickableIds.get(i);
+                        int id = ClickableIdsOnClick.get(i);
                         View tmp = raw.findViewById(id);
                         clickedview = isPointInsideView(e.getRawX(), e.getRawY(), tmp);
                         if (clickedview != null)
@@ -66,9 +66,9 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
                 {
                     if (raw instanceof ViewGroup)
                     {
-                        for (int i = 0; i < ClickableIds.size(); i++)
+                        for (int i = 0; i < ClickableIdsOnClick.size(); i++)
                         {
-                            int id = ClickableIds.get(i);
+                            int id = ClickableIdsOnClick.get(i);
                             View tmp = raw.findViewById(id);
                             clickedview = isPointInsideView(e.getRawX(), e.getRawY(), tmp);
                             if (clickedview != null)
@@ -87,8 +87,9 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
     public void setViewHolderModel(Class<ViewHolderModel> model)
     {
         this.viewHolderModel = model;
-        isidOK = false;
+        isVHoK = false;
     }
+/*
 
     public void setIds(List<Integer> ids)
     {
@@ -102,8 +103,10 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
         ClickableIds.addAll(hs);
         //distinct
 
-        isidOK = true;
+        isVHoK = true;
     }
+*/
+
 
     private void findIDS(Class<ViewHolderModel> model)
     {
@@ -134,7 +137,39 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
             MHBindView col = f.getAnnotation(MHBindView.class);
             if (Modifier.isPublic(modifier) && !Modifier.isStatic(modifier) &&
                     !Modifier.isFinal(modifier) && col != null && col.isClickable())
-                ClickableIds.add(col.value());
+                clickable.add(col.value());
+        }
+    }
+    private void findonClickAnot(Class<ViewHolderModel> model)
+    {
+        ViewHolderModel MyModel = null;
+        //try
+        try
+        {
+            MyModel = model.newInstance();
+        }
+        catch (InstantiationException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IllegalAccessException e)
+        {
+            e.printStackTrace();
+        }
+        if (MyModel == null)
+        {
+            Log.i("MH_VHModel ", " setViewModel: Null");
+            return;
+        }
+
+        for (Field f : model.getDeclaredFields())
+        {
+            Class<?> clazz = MyModel.getClass();
+            int modifier = f.getModifiers();
+            MHonClick col = f.getAnnotation(MHonClick.class);
+            if (Modifier.isPublic(modifier) && !Modifier.isStatic(modifier) &&
+                    !Modifier.isFinal(modifier) && col != null)
+                ClickableIdsOnClick.add(col.value());
         }
     }
 
@@ -145,11 +180,11 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
         if (raw == null)
             return false;
         View clickedview = null;
-        if (isidOK)
+        if (isVHoK)
         {
-            for (int i = 0; i < ClickableIds.size(); i++)
+            for (int i = 0; i < clickable.size(); i++)
             {
-                int id = ClickableIds.get(i);
+                int id = clickable.get(i);
                 View tmp = raw.findViewById(id);
                 clickedview = isPointInsideView(e.getRawX(), e.getRawY(), tmp);
                 if (clickedview != null)
@@ -160,9 +195,9 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
         {
             if (raw instanceof ViewGroup)
             {
-                for (int i = 0; i < ClickableIds.size(); i++)
+                for (int i = 0; i < clickable.size(); i++)
                 {
-                    int id = ClickableIds.get(i);
+                    int id = clickable.get(i);
                     View tmp = raw.findViewById(id);
                     clickedview = isPointInsideView(e.getRawX(), e.getRawY(), tmp);
                     if (clickedview != null)
@@ -211,6 +246,7 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
     {
 
     }
+
 
 
 }

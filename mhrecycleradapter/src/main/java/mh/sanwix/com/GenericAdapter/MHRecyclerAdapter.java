@@ -40,7 +40,6 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
 
     //region Varriables
     private SparseBooleanArray _selectedItems;
-    private List<MyKeyValue> listeners;
     private List<String> propertiesNames;
     private List<String> methodsNames;
     private boolean isSelectable;
@@ -118,7 +117,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         this.isMultiSelection = isMultiSelection;
         items = list != null ? list : new ArrayList<Model>();
         _selectedItems = new SparseBooleanArray();
-        listeners = new ArrayList<>();
+
         hasEmptyView = false;
         isLazyLoading = false;
         resId_lazy = -1;
@@ -150,26 +149,9 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         this.bindView = bindView;
     }
 
-    /**
-     * add View With Given ID as Clickable View on top of stack
-     *
-     * @param propertyID ID of clickable view
-     */
-    public void addListener(@IdRes int propertyID)
-    {
-        this.listeners.add(new MyKeyValue(propertyID, null));
-    }
 
-    /**
-     * remove clickable view from top of stack
-     */
-    public void remLastListener()
-    {
-        if (this.listeners.size() > 0)
-        {
-            this.listeners.remove(listeners.size() - 1);
-        }
-    }
+
+
 
     //region External interfaces Methods
 
@@ -303,8 +285,6 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
                 if (col != null)
                 {
                     propssss.add(f.getName());
-                    if (col.isClickable())
-                        addListener(col.value());
                 }
             }
         return propssss;
@@ -496,12 +476,8 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     public RecyclerView.OnItemTouchListener buildTouchItemListener(RecyclerView _rv, MHOnItemClickListener listener)
     {
         List<Integer> ids = new ArrayList<>();
-        for (MyKeyValue kv : listeners)
-        {
-            ids.add(kv.Key);
-        }
         MHTouchItemClick<VHModel> click = new MHTouchItemClick<VHModel>(_rv, listener, MyVHolder);
-        click.setIds(ids);
+        //click.setIds(ids);
         return click;
     }
 

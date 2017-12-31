@@ -9,7 +9,7 @@ public class myModel
     public boolean data;
 
 
-    @MHBindView(value = R.id.btn,isHtml = true)
+    @MHBindView(value = R.id.btn,isHtml = true,hiddenIfNull = true)
     public String salam;
 
 
@@ -17,16 +17,15 @@ public class myModel
     public myModel(String data)
     {
         this.data = false;
-        salam = "clickable";
+        salam ="clickable";
         i++;
     }
 
 
-    //@MHBindViewAction(R.id.btn)
+    //@MHBindViewAction(value = R.id.btn,hiddenIfNull = true)
     public String get()
     {
-
-        return String.valueOf(i);
+        return null;//String.valueOf(i);
     }
 
 }

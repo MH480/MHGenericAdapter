@@ -5,7 +5,16 @@ import android.graphics.Color;
 import android.graphics.ColorSpace;
 import android.graphics.drawable.Drawable;
 import android.media.Rating;
+import android.support.v4.media.RatingCompat;
+import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.AppCompatCheckBox;
+import android.support.v7.widget.AppCompatEditText;
+import android.support.v7.widget.AppCompatImageButton;
+import android.support.v7.widget.AppCompatImageView;
+import android.support.v7.widget.AppCompatRadioButton;
+import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -175,79 +184,121 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                             tv.append(String.valueOf(value));
                         else
                             tv.setText(isHTML ? Html.fromHtml(String.valueOf(value)).toString() : String.valueOf(value));
+
                     }
                     return kv.Value;
                 }
                 else if (kv.clazz == EditText.class)
                 {
                     EditText txt = ((EditText) kv.Value);
-                    if (isAppend)
-                        txt.append(String.valueOf(value));
+                    if (value == null && ifNullinVisible)
+                        txt.setVisibility(View.GONE);
                     else
-                        txt.setText(isHTML ? Html.fromHtml(String.valueOf(value)).toString() : String.valueOf(value));
+                    {
+                        if (isAppend)
+                            txt.append(String.valueOf(value));
+                        else
+                            txt.setText(isHTML ? Html.fromHtml(String.valueOf(value)).toString() : String.valueOf(value));
+                    }
                     return kv.Value;
                 }
                 else if (kv.clazz == Button.class)
                 {
                     Button btn = ((Button) kv.Value);
-                    if (isAppend)
-                        btn.append(String.valueOf(value));
+                    if (value == null && ifNullinVisible)
+                        btn.setVisibility(View.GONE);
                     else
-                        btn.setText(isHTML ? Html.fromHtml(String.valueOf(value)).toString() : String.valueOf(value));
+                    {
+                        if (isAppend)
+                            btn.append(String.valueOf(value));
+                        else
+                            btn.setText(isHTML ? Html.fromHtml(String.valueOf(value)).toString() : String.valueOf(value));
+                    }
                     return kv.Value;
                 }
                 else if (kv.clazz == CheckBox.class)
                 {
-                    ((CheckBox) kv.Value).setChecked((Boolean) value);
+                    CheckBox chk = ((CheckBox) kv.Value);
+                    if (value == null && ifNullinVisible)
+                        chk.setVisibility(View.GONE);
+                    else
+                    {
+                        chk.setChecked((Boolean) value);
+                    }
                     return kv.Value;
                 }
                 else if (kv.clazz == RadioButton.class)
                 {
-                    ((RadioButton) kv.Value).setChecked((Boolean) value);
+                    RadioButton rbtn = ((RadioButton) kv.Value);
+                    if (value == null && ifNullinVisible)
+                        rbtn.setVisibility(View.GONE);
+                    else
+                        rbtn.setChecked((Boolean) value);
                     return kv.Value;
                 }
                 else if (kv.clazz == Switch.class)
                 {
-                    ((Switch) kv.Value).setChecked((Boolean) value);
+                    Switch swt = ((Switch) kv.Value);
+                    if (value == null && ifNullinVisible)
+                        swt.setVisibility(View.GONE);
+                    else
+                        swt.setChecked((Boolean) value);
                     return kv.Value;
                 }
                 else if (kv.clazz == ImageButton.class)
                 {
-                    if (value instanceof Integer)
-                        ((ImageButton) kv.Value).setImageDrawable(this.itemView.getContext().getResources().getDrawable(Integer.parseInt(value + "")));
-                    else if (value instanceof Drawable)
-                        ((ImageButton) kv.Value).setImageDrawable(((Drawable) value));
-                    else if (value instanceof Bitmap)
-                        ((ImageButton) kv.Value).setImageBitmap(((Bitmap) value));
-                    else if (value instanceof String)
+                    ImageButton imgbtn = ((ImageButton) kv.Value);
+                    if (value == null && ifNullinVisible)
+                        imgbtn.setVisibility(View.GONE);
+                    else
                     {
-                        String strColor = (String) value;
-                        if (!strColor.startsWith("#"))
-                            strColor = "#" + strColor;
-                        ((ImageButton) kv.Value).setBackgroundColor(Color.parseColor(strColor));
+                        if (value instanceof Integer)
+                            imgbtn.setImageDrawable(this.itemView.getContext().getResources().getDrawable(Integer.parseInt(value + "")));
+                        else if (value instanceof Drawable)
+                            imgbtn.setImageDrawable(((Drawable) value));
+                        else if (value instanceof Bitmap)
+                            imgbtn.setImageBitmap(((Bitmap) value));
+                        else if (value instanceof String)
+                        {
+                            String strColor = (String) value;
+                            if (!strColor.startsWith("#"))
+                                strColor = "#" + strColor;
+                            imgbtn.setBackgroundColor(Color.parseColor(strColor));
+                        }
                     }
                     return kv.Value;
                 }
                 else if (kv.clazz == ImageView.class)
                 {
-                    if (value instanceof Integer)
-                        ((ImageView) kv.Value).setImageDrawable(this.itemView.getContext().getResources().getDrawable(Integer.parseInt(value + "")));
-                    else if (value instanceof Drawable)
-                        ((ImageView) kv.Value).setImageDrawable(((Drawable) value));
-                    else if (value instanceof Bitmap)
-                        ((ImageView) kv.Value).setImageBitmap(((Bitmap) value));
-                    else if (value instanceof String)
+                    ImageView img = ((ImageView) kv.Value);
+                    if (value == null && ifNullinVisible)
+                        img.setVisibility(View.GONE);
+                    else
                     {
-                        String strColor = (String) value;
-                        if (!strColor.startsWith("#"))
-                            strColor = "#" + strColor;
-                        ((ImageView) kv.Value).setBackgroundColor(Color.parseColor(strColor));
+
+                        if (value instanceof Integer)
+                            img.setImageDrawable(this.itemView.getContext().getResources().getDrawable(Integer.parseInt(value + "")));
+                        else if (value instanceof Drawable)
+                            img.setImageDrawable(((Drawable) value));
+                        else if (value instanceof Bitmap)
+                            img.setImageBitmap(((Bitmap) value));
+                        else if (value instanceof String)
+                        {
+                            String strColor = (String) value;
+                            if (!strColor.startsWith("#"))
+                                strColor = "#" + strColor;
+                            img.setBackgroundColor(Color.parseColor(strColor));
+                        }
                     }
                     return kv.Value;
                 }
                 else if (kv.clazz == RatingBar.class)
                 {
-                    ((RatingBar) kv.Value).setRating((Float.parseFloat(value + "")));
+                    RatingBar rtb = ((RatingBar) kv.Value);
+                    if (value == null && ifNullinVisible)
+                        rtb.setVisibility(View.GONE);
+                    else
+                        rtb.setRating((Float.parseFloat(value + "")));
                     return kv.Value;
                 }
                 else
@@ -267,16 +318,17 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
         for (MyKeyValue kv : ItemsHolder)
             if (kv.Key == (propertyID) && kv.Value != null)
             {
-                if (kv.clazz == TextView.class)
+                if (kv.clazz == TextView.class || kv.clazz == AppCompatTextView.class || kv.clazz.getSuperclass() == AppCompatTextView.class)
                 {
                     TextView tv = ((TextView) kv.Value);
                     tv.setText(String.valueOf(value));
                     if (col.hiddenIfNull())
                         tv.setVisibility(View.GONE);
 
+
                     return kv.Value;
                 }
-                else if (kv.clazz == EditText.class)
+                else if (kv.clazz == EditText.class || kv.clazz == AppCompatEditText.class || kv.clazz.getSuperclass() == AppCompatEditText.class)
                 {
                     EditText txt = ((EditText) kv.Value);
                     txt.setText(String.valueOf(value));
@@ -284,7 +336,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                         txt.setVisibility(View.GONE);
                     return kv.Value;
                 }
-                else if (kv.clazz == Button.class)
+                else if (kv.clazz == Button.class || kv.clazz == AppCompatButton.class || kv.clazz.getSuperclass() == AppCompatButton.class)
                 {
                     Button btn = ((Button) kv.Value);
                     btn.setText(String.valueOf(value));
@@ -292,7 +344,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                         btn.setVisibility(View.GONE);
                     return kv.Value;
                 }
-                else if (kv.clazz == CheckBox.class)
+                else if (kv.clazz == CheckBox.class || kv.clazz == AppCompatCheckBox.class || kv.clazz.getSuperclass() == AppCompatCheckBox.class)
                 {
                     CheckBox chk = ((CheckBox) kv.Value);
                     chk.setChecked((Boolean) value);
@@ -300,7 +352,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                         chk.setVisibility(View.GONE);
                     return kv.Value;
                 }
-                else if (kv.clazz == RadioButton.class)
+                else if (kv.clazz == RadioButton.class || kv.clazz == AppCompatRadioButton.class || kv.clazz.getSuperclass() == AppCompatRadioButton.class)
                 {
                     RadioButton btn = ((RadioButton) kv.Value);
                     btn.setChecked((Boolean) value);
@@ -308,7 +360,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                         btn.setVisibility(View.GONE);
                     return kv.Value;
                 }
-                else if (kv.clazz == Switch.class)
+                else if (kv.clazz == Switch.class || kv.clazz == SwitchCompat.class || kv.clazz.getSuperclass() == SwitchCompat.class)
                 {
                     Switch swt = (Switch) kv.Value;
                     swt.setChecked((Boolean) value);
@@ -316,7 +368,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                         swt.setVisibility(View.GONE);
                     return kv.Value;
                 }
-                else if (kv.clazz == ImageButton.class)
+                else if (kv.clazz == ImageButton.class || kv.clazz == AppCompatImageButton.class || kv.clazz.getSuperclass() == AppCompatImageButton.class)
                 {
                     if (value instanceof Integer)
                         ((ImageButton) kv.Value).setImageDrawable(this.itemView.getContext().getResources().getDrawable(Integer.parseInt(value + "")));
@@ -336,7 +388,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                     }
                     return kv.Value;
                 }
-                else if (kv.clazz == ImageView.class)
+                else if (kv.clazz == ImageView.class || kv.clazz == AppCompatImageView.class || kv.clazz.getSuperclass() == AppCompatImageView.class)
                 {
                     if (value instanceof Integer)
                         ((ImageView) kv.Value).setImageDrawable(this.itemView.getContext().getResources().getDrawable(Integer.parseInt(value + "")));
@@ -356,7 +408,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                     }
                     return kv.Value;
                 }
-                else if (kv.clazz == RatingBar.class)
+                else if (kv.clazz == RatingBar.class || kv.clazz == RatingCompat.class || kv.clazz.getSuperclass() == RatingCompat.class)
                 {
                     RatingBar rat = ((RatingBar) kv.Value);
                     rat.setRating((Float.parseFloat(value + "")));
