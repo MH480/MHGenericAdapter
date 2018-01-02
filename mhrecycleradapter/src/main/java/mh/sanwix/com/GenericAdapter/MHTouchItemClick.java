@@ -173,6 +173,7 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
         }
     }
 
+
     @Override
     public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e)
     {

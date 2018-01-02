@@ -322,7 +322,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                 {
                     TextView tv = ((TextView) kv.Value);
                     tv.setText(String.valueOf(value));
-                    if (col.hiddenIfNull())
+                    if ( value == null && col.hiddenIfNull())
                         tv.setVisibility(View.GONE);
 
 
@@ -332,7 +332,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                 {
                     EditText txt = ((EditText) kv.Value);
                     txt.setText(String.valueOf(value));
-                    if (col.hiddenIfNull())
+                    if (value == null && col.hiddenIfNull())
                         txt.setVisibility(View.GONE);
                     return kv.Value;
                 }
@@ -340,7 +340,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                 {
                     Button btn = ((Button) kv.Value);
                     btn.setText(String.valueOf(value));
-                    if (col.hiddenIfNull())
+                    if (value == null && col.hiddenIfNull())
                         btn.setVisibility(View.GONE);
                     return kv.Value;
                 }
@@ -348,7 +348,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                 {
                     CheckBox chk = ((CheckBox) kv.Value);
                     chk.setChecked((Boolean) value);
-                    if (col.hiddenIfNull())
+                    if (value == null && col.hiddenIfNull())
                         chk.setVisibility(View.GONE);
                     return kv.Value;
                 }
@@ -356,7 +356,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                 {
                     RadioButton btn = ((RadioButton) kv.Value);
                     btn.setChecked((Boolean) value);
-                    if (col.hiddenIfNull())
+                    if (value == null && col.hiddenIfNull())
                         btn.setVisibility(View.GONE);
                     return kv.Value;
                 }
@@ -364,7 +364,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                 {
                     Switch swt = (Switch) kv.Value;
                     swt.setChecked((Boolean) value);
-                    if (col.hiddenIfNull())
+                    if (value == null && col.hiddenIfNull())
                         swt.setVisibility(View.GONE);
                     return kv.Value;
                 }
@@ -383,7 +383,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                             strColor = "#" + strColor;
                         ImageButton img = ((ImageButton) kv.Value);
                         img.setBackgroundColor(Color.parseColor(strColor));
-                        if (col.hiddenIfNull())
+                        if (value == null && col.hiddenIfNull())
                             img.setVisibility(View.GONE);
                     }
                     return kv.Value;
@@ -403,7 +403,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                             strColor = "#" + strColor;
                         ImageView img = ((ImageView) kv.Value);
                         img.setBackgroundColor(Color.parseColor(strColor));
-                        if (col.hiddenIfNull())
+                        if (value == null && col.hiddenIfNull())
                             img.setVisibility(View.GONE);
                     }
                     return kv.Value;
@@ -412,7 +412,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                 {
                     RatingBar rat = ((RatingBar) kv.Value);
                     rat.setRating((Float.parseFloat(value + "")));
-                    if (col.hiddenIfNull())
+                    if (value == null && col.hiddenIfNull())
                         rat.setVisibility(View.GONE);
                     return kv.Value;
                 }
