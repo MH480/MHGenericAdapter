@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -19,7 +18,6 @@ import java.util.List;
 import mh.sanwix.com.GenericAdapter.MHIonBindView;
 import mh.sanwix.com.GenericAdapter.MHIonScrolling;
 import mh.sanwix.com.GenericAdapter.MHIstickyHeader;
-import mh.sanwix.com.GenericAdapter.MHItemHeaderDecoration;
 import mh.sanwix.com.GenericAdapter.MHOnItemClickListener;
 import mh.sanwix.com.GenericAdapter.MHRecyclerAdapter;
 import mh.sanwix.com.GenericAdapter.MHScrollState;

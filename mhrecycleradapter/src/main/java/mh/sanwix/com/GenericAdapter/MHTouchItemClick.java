@@ -26,14 +26,16 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
     private boolean isVHoK;
     private MHOnItemClickListener mListener;
 
-    public MHTouchItemClick(RecyclerView _rv, MHOnItemClickListener listener, Class<ViewHolderModel> myVHolder)
+    MHTouchItemClick(RecyclerView _rv, MHOnItemClickListener listener, Class<ViewHolderModel> myVHolder)
     {
         ClickableIdsOnClick = new ArrayList<>();
         clickable = new ArrayList<>();
         mListener = listener;
         rv = _rv;
-        setViewHolderModel(myVHolder);
+        //setViewHolderModel(myVHolder);
         //findonClickAnot(myVHolder);
+        this.viewHolderModel = myVHolder;
+        isVHoK = false;
         findIDS(myVHolder);
         mGestureDetector = new GestureDetector(_rv.getContext(), new GestureDetector.SimpleOnGestureListener()
         {
@@ -84,11 +86,7 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
         });
     }
 
-    public void setViewHolderModel(Class<ViewHolderModel> model)
-    {
-        this.viewHolderModel = model;
-        isVHoK = false;
-    }
+
 /*
 
     public void setIds(List<Integer> ids)

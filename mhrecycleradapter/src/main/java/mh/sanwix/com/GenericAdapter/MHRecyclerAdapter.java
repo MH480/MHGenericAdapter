@@ -1,15 +1,14 @@
 package mh.sanwix.com.GenericAdapter;
 
-import android.support.annotation.IdRes;
+
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -42,6 +41,9 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     private SparseBooleanArray _selectedItems;
     private List<String> propertiesNames;
     private List<String> methodsNames;
+    private MH_Map<MHBindView, Object> mKeyValueData;
+    private MH_Map<MHBindViewAction, Object> mKeyValueAction;
+    private boolean isDataRefatored;
     private boolean isSelectable;
     private boolean isMultiSelection;
     private boolean hasEmptyView;
@@ -117,7 +119,9 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         this.isMultiSelection = isMultiSelection;
         items = list != null ? list : new ArrayList<Model>();
         _selectedItems = new SparseBooleanArray();
-
+        mKeyValueData = new MH_Map<>();
+        mKeyValueAction = new MH_Map<>();
+        isDataRefatored = false;
         hasEmptyView = false;
         isLazyLoading = false;
         resId_lazy = -1;
@@ -148,9 +152,6 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     {
         this.bindView = bindView;
     }
-
-
-
 
 
     //region External interfaces Methods
@@ -203,7 +204,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     @Override
     public List<Model> getItems()
     {
-        return items;
+        return new ArrayList<Model>(items);
     }
 
 
@@ -555,10 +556,80 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
             default:
         }
 
+        if (items.get(position) == null) return;
+        while (!isDataRefatored) ;
+
+
+        List<View> childs = new ArrayList<>();
+        for (int i = 0; i < mKeyValueData.size(); i++) // propertiesNames is string because i need property value with column i can`t get property value
+        {
+            Pair<MHBindView, Object> data = mKeyValueData.get(i);
+            View j = holder.setValue(data.first, data.first.isPosition() ? position : data.second);
+            childs.add(j);
+        }
+
+        for (int i = 0; i < mKeyValueAction.size(); i++)
+        {
+            Pair<MHBindViewAction, Object> data = mKeyValueAction.get(i);
+            holder.setValue(data.first, data.second);
+        }
+
+        mKeyValueData = new MH_Map<>();
+        mKeyValueAction = new MH_Map<>();
+        if (bindView != null && holder.itemView instanceof ViewGroup)
+        {
+            View[] array = new View[0];
+
+            if (childs.size() > 0)
+            {
+                array = new View[childs.size()];
+                childs.toArray(array);
+            }
+            bindView.BindViewHolder((ViewGroup) holder.itemView, holder.getMyModel(), position, array);
+
+        }
+
+    }
+
+    @Override
+    public int getItemViewType(final int position)
+    {
+        int result = hasEmptyView && items.size() == 0 ? EMPTY_VIEW_TYPE : MAIN_VIEW_TYPE;
+        if (isLazyLoading && hasLazyView && position == lazyLoadingPosition)
+        {
+            result = LAZY_VIEW_TYPE;
+        }
+        if (StickyHeaderListener != null && StickyHeaderListener.isHeader(position) && StickyHeader != null)
+        {
+            result = HEADER_VIEW_TYPE;
+            StickyHeader.setPosition(position);
+        }
+        if (MAIN_VIEW_TYPE == result)
+        {
+            isDataRefatored = false;
+            new Thread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    getDataRefactoring(position);
+                }
+            }).start();
+
+        }
+        return result;
+    }
+
+    private void getDataRefactoring(int position)
+    {
 
         Model model = items.get(position);
-        List<View> childs = new ArrayList<>();
-        Class<Model> clazz = (Class<Model>) model.getClass();
+        if (model == null)
+        {
+            isDataRefatored = true;
+            return;
+        }
+        Class<?> clazz = model.getClass();
         for (String propName : propertiesNames) // propertiesNames is string because i need property value with column i can`t get property value
         {
             Field f = null;
@@ -571,10 +642,10 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
                 e.printStackTrace();
             }
             MHBindView col = f != null ? f.getAnnotation(MHBindView.class) : null;
+            Object value = null;
             if (col != null)
             {
                 f.setAccessible(true);
-                Object value = null;
                 try
                 {
                     value = f.get(model);
@@ -583,10 +654,11 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
                 {
                     e.printStackTrace();
                 }
-                View j = holder.setValue(col, col.isPosition() ? position : value);
-                childs.add(j);
+                mKeyValueData.add(new Pair<MHBindView, Object>(col, value));
             }
+
         }
+
 
         for (String methName : methodsNames)
         {
@@ -609,6 +681,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
                     if (m.getGenericParameterTypes().length == 0)
                     {
                         value = m.invoke(model, new Object[]{});
+                        mKeyValueAction.add(new Pair<MHBindViewAction, Object>(col, value));
                     }
                 }
                 catch (IllegalAccessException e)
@@ -619,41 +692,11 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
                 {
                     e.printStackTrace();
                 }
-                View j = holder.setValue(col, value);
-                childs.add(j);
+
             }
         }
 
-
-        if (bindView != null && holder.itemView instanceof ViewGroup)
-        {
-            View[] array = new View[0];
-
-            if (childs.size() > 0)
-            {
-                array = new View[childs.size()];
-                childs.toArray(array);
-            }
-            bindView.BindViewHolder((ViewGroup) holder.itemView, holder.getMyModel(), position, array);
-
-        }
-
-    }
-
-    @Override
-    public int getItemViewType(int position)
-    {
-        int result = hasEmptyView && items.size() == 0 ? EMPTY_VIEW_TYPE : MAIN_VIEW_TYPE;
-        if (isLazyLoading && hasLazyView && position == lazyLoadingPosition)
-        {
-            result = LAZY_VIEW_TYPE;
-        }
-        if (StickyHeaderListener != null && StickyHeaderListener.isHeader(position) && StickyHeader != null)
-        {
-            result = HEADER_VIEW_TYPE;
-            StickyHeader.setPosition(position);
-        }
-        return result;
+        isDataRefatored = true;
     }
 
     @Override
@@ -661,4 +704,6 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     {
         return hasEmptyView && items.size() == 0 ? 1 : items.size();
     }
+
+
 }
