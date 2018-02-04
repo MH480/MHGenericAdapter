@@ -33,4 +33,8 @@ public @interface MHBindView
     boolean hiddenIfNull() default false;
 
     boolean isPosition() default false;
+
+    String defaultValue() default "";
+    int defaultValueRes() default -1;
+    boolean defaultValueBool() default false;
 }

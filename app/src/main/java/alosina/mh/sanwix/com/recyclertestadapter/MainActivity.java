@@ -73,7 +73,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mRecycler.setOnScrollListener(mAdapter.buildScrollListener(this));
         mRecycler.addItemDecoration(mAdapter.buildStickyHeader(mRecycler,this));
         mAdapter.setLazyView(R.layout.layout_item_waiting);
-        mAdapter.beginLazyLoading();
+
+        /*mAdapter.beginLazyLoading();
         new CountDownTimer(5000, 1000)
         {
             @Override
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mAdapter.endLazyLoading();
                 mAdapter.setItems(models);
             }
-        }.start();
+        }.start();*/
 
 
 

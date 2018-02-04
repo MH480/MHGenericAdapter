@@ -11,7 +11,7 @@ import android.view.View;
  * Created by m.hoseini on 10/21/2017.
  */
 
-class MHonScroll extends RecyclerView.OnScrollListener
+public class MHonScroll extends RecyclerView.OnScrollListener
 {
     MHIonScrolling onScrolling;
     int dxOld, dyOld;
@@ -59,7 +59,11 @@ class MHonScroll extends RecyclerView.OnScrollListener
         dxOld = dx;
         dyOld = dy;
         if (state != MHScrollState.NotScrolling)
+        {
+            if (state == MHScrollState.Bottom)
+                recyclerView.stopScroll();
             onScrolling.onScrolling(null, pos, dx, dy, state);
+        }
 
     }
 

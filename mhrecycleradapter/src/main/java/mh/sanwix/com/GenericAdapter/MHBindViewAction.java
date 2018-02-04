@@ -14,4 +14,6 @@ public @interface MHBindViewAction
 {
     int value();
     boolean hiddenIfNull() default false;
+    String defaultValue() default "";
+    int defaultValueRes() default -1;
 }

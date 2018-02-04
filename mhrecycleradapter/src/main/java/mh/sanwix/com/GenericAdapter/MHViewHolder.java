@@ -43,7 +43,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
     private List<MyKeyValue> ItemsHolder;
     private boolean hasPosition;
 
-    public MHViewHolder(View itemView, Class<T> model)
+    MHViewHolder(View itemView, Class<T> model)
     {
         super(itemView);
         ItemsHolder = new ArrayList<>();
@@ -165,10 +165,17 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
 
     }
 
-    public View setValue(MHBindView col, Object value)
+    View setValue(MHBindView col, Object value)
     {
         int propertyID = col.value();
-        boolean isAppend = col.isTextAppend(), isHTML = col.isHtml(), ifNullinVisible = col.hiddenIfNull();
+        boolean isAppend = col.isTextAppend(), isHTML = col.isHtml(), ifNullinVisible = col.hiddenIfNull(),
+                hasDefaultValue = !col.defaultValue().isEmpty(), hasDefaultValueRes = col.defaultValueRes() != -1,
+                hasDefaultValueResBool = col.defaultValueBool();
+        String defaultValue = null;
+        if (hasDefaultValue)
+            defaultValue = col.defaultValue();
+
+
         for (MyKeyValue kv : ItemsHolder)
             if (kv.Key == (propertyID) && kv.Value != null)
             {
@@ -186,6 +193,16 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                             tv.setText(isHTML ? Html.fromHtml(String.valueOf(value)).toString() : String.valueOf(value));
 
                     }
+                    if (hasDefaultValue)
+                    {
+                        tv.setText(defaultValue);
+                        tv.setVisibility(View.VISIBLE);
+                    }
+                    else if (hasDefaultValueRes)
+                    {
+                        tv.setText(col.defaultValueRes());
+                        tv.setVisibility(View.VISIBLE);
+                    }
                     return kv.Value;
                 }
                 else if (kv.clazz == EditText.class)
@@ -199,6 +216,16 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                             txt.append(String.valueOf(value));
                         else
                             txt.setText(isHTML ? Html.fromHtml(String.valueOf(value)).toString() : String.valueOf(value));
+                    }
+                    if (hasDefaultValue)
+                    {
+                        txt.setText(defaultValue);
+                        txt.setVisibility(View.VISIBLE);
+                    }
+                    else if (hasDefaultValueRes)
+                    {
+                        txt.setText(col.defaultValueRes());
+                        txt.setVisibility(View.VISIBLE);
                     }
                     return kv.Value;
                 }
@@ -214,35 +241,66 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                         else
                             btn.setText(isHTML ? Html.fromHtml(String.valueOf(value)).toString() : String.valueOf(value));
                     }
+                    if (hasDefaultValue)
+                    {
+                        btn.setText(defaultValue);
+                        btn.setVisibility(View.VISIBLE);
+                    }
+                    else if (hasDefaultValueRes)
+                    {
+                        btn.setText(col.defaultValueRes());
+                        btn.setVisibility(View.VISIBLE);
+                    }
                     return kv.Value;
                 }
                 else if (kv.clazz == CheckBox.class)
                 {
                     CheckBox chk = ((CheckBox) kv.Value);
+                    if (hasDefaultValueResBool)
+                    {
+                        chk.setChecked(hasDefaultValueResBool);
+                        chk.setVisibility(View.VISIBLE);
+                    }
+
                     if (value == null && ifNullinVisible)
                         chk.setVisibility(View.GONE);
                     else
                     {
                         chk.setChecked((Boolean) value);
                     }
+
                     return kv.Value;
                 }
                 else if (kv.clazz == RadioButton.class)
                 {
                     RadioButton rbtn = ((RadioButton) kv.Value);
+
+                    if (hasDefaultValueResBool)
+                    {
+                        rbtn.setChecked(hasDefaultValueResBool);
+                        rbtn.setVisibility(View.VISIBLE);
+                    }
+
                     if (value == null && ifNullinVisible)
                         rbtn.setVisibility(View.GONE);
                     else
                         rbtn.setChecked((Boolean) value);
+
                     return kv.Value;
                 }
                 else if (kv.clazz == Switch.class)
                 {
                     Switch swt = ((Switch) kv.Value);
+                    if (hasDefaultValueResBool)
+                    {
+                        swt.setChecked(hasDefaultValueResBool);
+                        swt.setVisibility(View.VISIBLE);
+                    }
                     if (value == null && ifNullinVisible)
                         swt.setVisibility(View.GONE);
                     else
                         swt.setChecked((Boolean) value);
+
                     return kv.Value;
                 }
                 else if (kv.clazz == ImageButton.class)
@@ -265,6 +323,11 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                                 strColor = "#" + strColor;
                             imgbtn.setBackgroundColor(Color.parseColor(strColor));
                         }
+                    }
+                    if (hasDefaultValueRes)
+                    {
+                        imgbtn.setImageDrawable(this.itemView.getContext().getResources().getDrawable(Integer.parseInt(col.defaultValueRes() + "")));
+                        imgbtn.setVisibility(View.VISIBLE);
                     }
                     return kv.Value;
                 }
@@ -290,6 +353,11 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                             img.setBackgroundColor(Color.parseColor(strColor));
                         }
                     }
+                    if (hasDefaultValueRes)
+                    {
+                        img.setImageDrawable(this.itemView.getContext().getResources().getDrawable(Integer.parseInt(col.defaultValueRes() + "")));
+                        img.setVisibility(View.VISIBLE);
+                    }
                     return kv.Value;
                 }
                 else if (kv.clazz == RatingBar.class)
@@ -299,6 +367,11 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                         rtb.setVisibility(View.GONE);
                     else
                         rtb.setRating((Float.parseFloat(value + "")));
+                    if (hasDefaultValueRes)
+                    {
+                        rtb.setProgress(col.defaultValueRes());
+                        rtb.setVisibility(View.VISIBLE);
+                    }
                     return kv.Value;
                 }
                 else
@@ -312,9 +385,14 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
     }
 
 
-    public View setValue(MHBindViewAction col, Object value)
+    View setValue(MHBindViewAction col, Object value)
     {
         int propertyID = col.value();
+        boolean hasDefaultValue = !col.defaultValue().isEmpty(), hasDefaultValueRes = col.defaultValueRes() != -1;
+        String defaultValue = null;
+        if (hasDefaultValue)
+            defaultValue = col.defaultValue();
+
         for (MyKeyValue kv : ItemsHolder)
             if (kv.Key == (propertyID) && kv.Value != null)
             {
@@ -322,10 +400,19 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                 {
                     TextView tv = ((TextView) kv.Value);
                     tv.setText(String.valueOf(value));
-                    if ( value == null && col.hiddenIfNull())
+                    if (value == null && col.hiddenIfNull())
                         tv.setVisibility(View.GONE);
 
-
+                    if (hasDefaultValue)
+                    {
+                        tv.setText(defaultValue);
+                        tv.setVisibility(View.VISIBLE);
+                    }
+                    else if (hasDefaultValueRes)
+                    {
+                        tv.setText(col.defaultValueRes());
+                        tv.setVisibility(View.VISIBLE);
+                    }
                     return kv.Value;
                 }
                 else if (kv.clazz == EditText.class || kv.clazz == AppCompatEditText.class || kv.clazz.getSuperclass() == AppCompatEditText.class)
@@ -334,6 +421,16 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                     txt.setText(String.valueOf(value));
                     if (value == null && col.hiddenIfNull())
                         txt.setVisibility(View.GONE);
+                    if (hasDefaultValue)
+                    {
+                        txt.setText(defaultValue);
+                        txt.setVisibility(View.VISIBLE);
+                    }
+                    else if (hasDefaultValueRes)
+                    {
+                        txt.setText(col.defaultValueRes());
+                        txt.setVisibility(View.VISIBLE);
+                    }
                     return kv.Value;
                 }
                 else if (kv.clazz == Button.class || kv.clazz == AppCompatButton.class || kv.clazz.getSuperclass() == AppCompatButton.class)
@@ -342,6 +439,16 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                     btn.setText(String.valueOf(value));
                     if (value == null && col.hiddenIfNull())
                         btn.setVisibility(View.GONE);
+                    if (hasDefaultValue)
+                    {
+                        btn.setText(defaultValue);
+                        btn.setVisibility(View.VISIBLE);
+                    }
+                    else if (hasDefaultValueRes)
+                    {
+                        btn.setText(col.defaultValueRes());
+                        btn.setVisibility(View.VISIBLE);
+                    }
                     return kv.Value;
                 }
                 else if (kv.clazz == CheckBox.class || kv.clazz == AppCompatCheckBox.class || kv.clazz.getSuperclass() == AppCompatCheckBox.class)
@@ -350,6 +457,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
                     chk.setChecked((Boolean) value);
                     if (value == null && col.hiddenIfNull())
                         chk.setVisibility(View.GONE);
+
                     return kv.Value;
                 }
                 else if (kv.clazz == RadioButton.class || kv.clazz == AppCompatRadioButton.class || kv.clazz.getSuperclass() == AppCompatRadioButton.class)
@@ -426,7 +534,14 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
         return null;
     }
 
-    public View setValue(int propertyID, Object value, boolean isAppend, boolean isHTML)
+    Object getMyModel()
+    {
+        return MyModel;
+    }
+
+
+
+   /* public View setValue(int propertyID, Object value, boolean isAppend, boolean isHTML)
     {
         for (MyKeyValue kv : ItemsHolder)
             if (kv.Key == (propertyID) && kv.Value != null)
@@ -562,10 +677,7 @@ class MHViewHolder<T> extends RecyclerView.ViewHolder
         for (int i = 0; i < ItemsHolder.size(); i++)
             vs[i] = ItemsHolder.get(i).Value;
         return vs;
-    }
+    }*/
 
-    public Object getMyModel()
-    {
-        return MyModel;
-    }
+
 }

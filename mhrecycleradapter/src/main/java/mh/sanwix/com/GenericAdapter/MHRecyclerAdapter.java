@@ -3,6 +3,7 @@ package mh.sanwix.com.GenericAdapter;
 
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
@@ -16,6 +17,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -41,8 +45,8 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     private SparseBooleanArray _selectedItems;
     private List<String> propertiesNames;
     private List<String> methodsNames;
-    private MH_Map<MHBindView, Object> mKeyValueData;
-    private MH_Map<MHBindViewAction, Object> mKeyValueAction;
+    MH_Map<MHBindView, Object> mKeyValueData;
+    MH_Map<MHBindViewAction, Object> mKeyValueAction;
     private boolean isDataRefatored;
     private boolean isSelectable;
     private boolean isMultiSelection;
@@ -56,9 +60,9 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     //endregion
 
     //interface
-    private MHIonBindView bindView;
+    MHIonBindView bindView;
     private MHIstickyHeader StickyHeaderListener;
-
+    private MHBindDataAsync<VHModel> async;
 
     @LayoutRes
     private int resId;
@@ -67,6 +71,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     @LayoutRes
     private int resId_lazy;
 
+    private ThreadPoolExecutor _poolExecuter;
 
     public MHRecyclerAdapter(Class<VHModel> myVHModelClass)
     {
@@ -127,8 +132,8 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         resId_lazy = -1;
         propertiesNames = new ArrayList<>();
         methodsNames = new ArrayList<>();
-
-
+        async = new MHBindDataAsync<VHModel>(this);
+        _poolExecuter = new ThreadPoolExecutor(20, 100, 0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(100));
     }
 
     /**
@@ -156,7 +161,6 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
 
     //region External interfaces Methods
 
-
     @Override
     public <EmptyVH extends Object> void setEmptyView(Class<EmptyVH> emptyVHModelClass)
     {
@@ -164,7 +168,6 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         int ID = (col != null) ? col.value() : 0;
         setEmptyView(ID, emptyVHModelClass);
     }
-
 
     @Override
     public <EmptyVH extends Object> void setEmptyView(@LayoutRes int id, Class<EmptyVH> emptyVHModelClass)
@@ -211,18 +214,18 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
     @Override
     public void setItems(List<Model> _items)
     {
+
         if (_items == null)
             _items = new ArrayList<>();
-
         int size = items.size();
         items.clear();
-        notifyItemRangeRemoved(0, size);
+        notifyItemRangeRemoved(0, size );
         if (_items.size() > 0)
         {
             items.addAll(_items);
             propertiesNames = getPropertiesNames(items.get(0));
             methodsNames = getMethodsNames(items.get(0));
-            notifyItemRangeInserted(0, _items.size());
+            notifyItemRangeInserted(size, items.size() - 1);
         }
         else
         {
@@ -444,7 +447,7 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
             throw new RuntimeException("you must use 'setItems' method for first time to initialize data");
         int size = items.size();
         items.addAll(appends);
-        notifyItemRangeInserted(size, appends.size());
+        notifyItemRangeInserted(size, items.size() -1);
     }
 
     @Override
@@ -554,41 +557,54 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
                 }
                 return;
             default:
+                if (items.get(position) != null)
+                {
+                    getDataRefactoring(position);
+
+                    List<View> childs = new ArrayList<>();
+                    for (int i = 0; i < mKeyValueData.size(); i++) // propertiesNames is string because i need property value with column i can`t get property value
+                    {
+                        Pair<MHBindView, Object> data1 = mKeyValueData.get(i);
+                        View j = holder.setValue(data1.first, data1.first.isPosition() ? position : data1.second);
+                        childs.add(j);
+                    }
+
+                    for (int i = 0; i < mKeyValueAction.size(); i++)
+                    {
+                        Pair<MHBindViewAction, Object> data2 = mKeyValueAction.get(i);
+                        holder.setValue(data2.first, data2.second);
+                    }
+
+                    mKeyValueData = new MH_Map<>();
+                    mKeyValueAction = new MH_Map<>();
+                    if (bindView != null && holder.itemView instanceof ViewGroup)
+                    {
+                        View[] array = new View[0];
+
+                        if (childs.size() > 0)
+                        {
+                            array = new View[childs.size()];
+                            childs.toArray(array);
+                        }
+                        bindView.BindViewHolder((ViewGroup) holder.itemView, holder.getMyModel(), position, array);
+
+                    }
+                }
         }
 
-        if (items.get(position) == null) return;
-        while (!isDataRefatored) ;
 
 
-        List<View> childs = new ArrayList<>();
-        for (int i = 0; i < mKeyValueData.size(); i++) // propertiesNames is string because i need property value with column i can`t get property value
-        {
-            Pair<MHBindView, Object> data = mKeyValueData.get(i);
-            View j = holder.setValue(data.first, data.first.isPosition() ? position : data.second);
-            childs.add(j);
-        }
 
-        for (int i = 0; i < mKeyValueAction.size(); i++)
-        {
-            Pair<MHBindViewAction, Object> data = mKeyValueAction.get(i);
-            holder.setValue(data.first, data.second);
-        }
+        /*async.setData(new MHKeyValuePair<>(position, holder));
+        async.execute();*/
 
-        mKeyValueData = new MH_Map<>();
-        mKeyValueAction = new MH_Map<>();
-        if (bindView != null && holder.itemView instanceof ViewGroup)
-        {
-            View[] array = new View[0];
+    }
 
-            if (childs.size() > 0)
-            {
-                array = new View[childs.size()];
-                childs.toArray(array);
-            }
-            bindView.BindViewHolder((ViewGroup) holder.itemView, holder.getMyModel(), position, array);
 
-        }
-
+    @Override
+    public long getItemId(int position)
+    {
+        return position;
     }
 
     @Override
@@ -607,20 +623,20 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
         if (MAIN_VIEW_TYPE == result)
         {
             isDataRefatored = false;
-            new Thread(new Runnable()
+           /* new Thread(new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    getDataRefactoring(position);
+                    //getDataRefactoring(position);
                 }
-            }).start();
+            }).start();*/
 
         }
         return result;
     }
 
-    private void getDataRefactoring(int position)
+    void getDataRefactoring(int position)
     {
 
         Model model = items.get(position);
