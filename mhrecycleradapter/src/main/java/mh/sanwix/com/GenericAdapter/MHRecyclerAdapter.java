@@ -225,13 +225,9 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
             items.addAll(_items);
             propertiesNames = getPropertiesNames(items.get(0));
             methodsNames = getMethodsNames(items.get(0));
-            notifyItemRangeInserted(size, items.size() - 1);
+            //notifyItemRangeInserted(size, items.size() - 1);
         }
-        else
-        {
-            notifyDataSetChanged();
-        }
-
+        notifyDataSetChanged();
 
     }
 
@@ -447,7 +443,8 @@ public class MHRecyclerAdapter<Model, VHModel> extends RecyclerView.Adapter<MHVi
             throw new RuntimeException("you must use 'setItems' method for first time to initialize data");
         int size = items.size();
         items.addAll(appends);
-        notifyItemRangeInserted(size, items.size() -1);
+        notifyDataSetChanged();
+        //notifyItemRangeInserted(size, items.size() -1);
     }
 
     @Override

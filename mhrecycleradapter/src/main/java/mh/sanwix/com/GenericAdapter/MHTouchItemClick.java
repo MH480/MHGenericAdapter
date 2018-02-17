@@ -22,7 +22,7 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
     private GestureDetector mGestureDetector;
     private RecyclerView rv;
     private Class<ViewHolderModel> viewHolderModel;
-    private List<Integer> ClickableIdsOnClick,clickable;
+    private List<Integer> ClickableIdsOnClick, clickable;
     private boolean isVHoK;
     private MHOnItemClickListener mListener;
 
@@ -138,6 +138,7 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
                 clickable.add(col.value());
         }
     }
+
     private void findonClickAnot(Class<ViewHolderModel> model)
     {
         ViewHolderModel MyModel = null;
@@ -245,7 +246,6 @@ class MHTouchItemClick<ViewHolderModel> implements RecyclerView.OnItemTouchListe
     {
 
     }
-
 
 
 }
