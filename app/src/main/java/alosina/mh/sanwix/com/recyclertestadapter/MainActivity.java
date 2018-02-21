@@ -130,7 +130,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void BindViewHolder(ViewGroup rootView, Object HolderClass, int posision, View... childViews)
     {
-        Log.i("asd", "BindViewHolder: ");
+        if (posision >= 0 && 0 < mAdapter.getItemCount())
+        {
+            myModel model = mAdapter.getItem(posision);
+            Log.i("asd", "BindViewHolder: " + model.salam);
+        }
     }
 
 
