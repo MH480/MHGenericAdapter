@@ -12,7 +12,7 @@ maven { url "https://jitpack.io" }
 And then add gradle url to your app-level build.gradle
 
 ```
-compile "com.github.MH480:MHGenericAdapter:0.1.4"
+implementation "com.github.MH480:MHGenericAdapter:0.1.5"
 ```
 ### Advantages
     * You can get rid of creating so many adapter classes for each recycler view
